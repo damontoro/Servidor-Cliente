@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Scanner;
 
 import client.ClientObserver;
 import client.Client;
@@ -37,7 +38,10 @@ public class ClientView extends JFrame implements ClientObserver{
 
 	private String getUserName() {
 		System.out.println("Enter your user name: ");
-		return System.console().readLine();
+		Scanner s = new Scanner(System.in);
+		String name = s.next();
+		s.close();
+		return name;
 	}
 
 
