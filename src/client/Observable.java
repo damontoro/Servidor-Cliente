@@ -1,6 +1,6 @@
 package client;
 
-public interface ClientObservable<T> {
+public interface Observable<T> {
 	void addObserver(T o);
 	void removeObserver(T o);
 }

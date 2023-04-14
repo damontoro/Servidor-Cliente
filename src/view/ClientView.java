@@ -5,46 +5,46 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Scanner;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import client.ClientObserver;
-import client.Client;
+import controller.Controller;
 
+@SuppressWarnings("serial")
 public class ClientView extends JFrame implements ClientObserver{
+	Controller controller;
 	
-	Client client;
-
-	public ClientView(Client client){
+	public ClientView(Controller c){
 		super("Client");
-		this.client = client;
-		client.addObserver(this);
-		client.setName(getUserName());
-		client.loadSharedInfo();
-
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(400, 400);
-		setVisible(true);
-
-		JButton btnConnect = new JButton("Connect");
-		btnConnect.addActionListener(new ActionListener(){
+		controller = c;
+		controller.addObserver(this);
+		initGUI();
+	}
+	
+	private void initGUI() {
+		JButton btnRegister = new JButton("Register");
+		btnRegister.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				client.connectToServer();
+				JOptionPane.showInputDialog("Escribe tu id");
+				controller.connect();
 			}
 		});
 
-		add(btnConnect);
+		add(btnRegister);
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(400, 400);
+		setVisible(true);
+		
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent winEvt) {
+				controller.disconnect();
+	            System.exit(0);
+	        }
+		});
 	}
-
-	private String getUserName() {
-		System.out.println("Enter your user name: ");
-		Scanner s = new Scanner(System.in);
-		String name = s.next();
-		s.close();
-		return name;
-	}
-
-
 
 	@Override
 	public void onError(String message) {
