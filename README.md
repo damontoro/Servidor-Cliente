@@ -4,5 +4,6 @@ Implementación de un Servidor y un Cliente. El servidor funciona como proxy par
 
 TODO:
 
-	Crear la clase message
-	Hacer la puta gui
+	Revisar el sistema de mensajes entre cliente y servidor
+	Preguntar por posibles errores de concurrencia en el onError
+	Hacer la puta maldita gui
