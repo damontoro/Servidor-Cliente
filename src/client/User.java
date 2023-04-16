@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Set;
 
 public class User implements Serializable{
+	private static final long serialVersionUID = -259528965411700238L;
+	
 	private String id; //user name
 	private InetAddress ip;
 	private Set<String> sharedInfo; //Los archivos subidos

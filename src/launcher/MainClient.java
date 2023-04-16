@@ -7,11 +7,14 @@ import controller.Controller;
 import view.ClientView;
 
 public class MainClient {
-
 	public static void main(String[] args) {
-		Client client = new Client();
-		Controller controller = new Controller(client);
-		SwingUtilities.invokeLater(() -> new ClientView(controller));
+		try {
+			Client client = new Client();
+			Controller controller = new Controller(client);
+			SwingUtilities.invokeLater(() -> new ClientView(controller));
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
-
 }
