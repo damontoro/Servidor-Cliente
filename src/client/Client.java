@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+import message.ConnexionMessage;
 import message.GetUsersMessage;
 import message.LoginMessage;
 import message.LogoffMessage;
+import message.Message;
 import server.Server;
 
 import java.util.HashSet;
@@ -30,24 +32,33 @@ public class Client implements Observable<ClientObserver>{
 		connected = false;
 		requestUsersSem = new Semaphore(1);
 	}
+	
+	private void sendMessage(Socket s, Message<?> message) throws Exception {
+		ObjectOutputStream outStream = new ObjectOutputStream(s.getOutputStream());
+
+		outStream.writeObject(message);
+		outStream.flush();
+	}
+	
+	private Message<?> receiveMessage(Socket s) throws Exception{
+		ObjectInputStream inStream = new ObjectInputStream(s.getInputStream());
+		Message<?> m = (Message<?>) inStream.readObject();
+		
+		inStream.close();
+		s.close();
+		
+		return m;
+	}
+	
 
 	public void connect() {
 		try{
 			Socket serverSocket = new Socket(Server.HOST, Server.PORT);
+			sendMessage(serverSocket, new LoginMessage(user.getIp().getHostName(), Server.HOST, user));
+			ConnexionMessage reply = (ConnexionMessage) receiveMessage(serverSocket);
 			
-			ObjectOutputStream outStream = new ObjectOutputStream(serverSocket.getOutputStream());
-
-			outStream.writeObject(new LoginMessage(user.getIp().getHostName(), Server.HOST, user));
-			outStream.flush();
-
-			ObjectInputStream inStream = new ObjectInputStream(serverSocket.getInputStream());
-			connected = inStream.readBoolean();
-
-			inStream.close();
-			outStream.close();
-			serverSocket.close();
-
-
+			connected = reply.retrieveInfo();
+			
 			if(!connected)
 				throw new Exception("User already connected");
 

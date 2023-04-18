@@ -24,8 +24,9 @@ public class ClientHandler implements Runnable{
 			Command c = Command.getCommand(message);
 			c.execute(server, socket);
 			
-			inStream.close();
 			socket.close();
+			
+			server.printUsersInfo();
 		}
 		catch(Exception e){
 			e.printStackTrace();

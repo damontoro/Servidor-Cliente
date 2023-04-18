@@ -11,17 +11,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-	public static final String HOST = "192.168.56.1";
-	public static final int PORT = 8000;
+	public static final String HOST = "localhost";
+	public static final int PORT = 8800;
 	
 	private Map<String, User> users;
 	private ServerSocket serverSocket;
 
-	public Server(int port) {
+	public Server() {
 		users = new HashMap<String, User>();
 		System.out.println("Server started");
 		try {
-			serverSocket = new ServerSocket(port);
+			serverSocket = new ServerSocket(PORT);
 			while(true){
 				try{
 					Socket cliSocket = serverSocket.accept();
