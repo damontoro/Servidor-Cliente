@@ -11,7 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-	public static final String HOST = "localhost";
+	public static final String HOST = "192.168.56.1";
 	public static final int PORT = 8000;
 	
 	private Map<String, User> users;
@@ -58,9 +58,10 @@ public class Server {
 	
 	public synchronized void printUsersInfo() {
 		if(users.size() == 0) {
-			System.out.print("No user connected");
+			System.out.print("No user connected\n\n");
 			return;
 		}
+		System.out.print("--------------------------\n");
 		for(String id : users.keySet()) {
 			System.out.print("ID: "  + users.get(id).getId() + "\n");
 			System.out.print("IP: "  + users.get(id).getIp() + "\n");
@@ -70,7 +71,7 @@ public class Server {
 			}
 			System.out.print("--------------------------\n");
 		}
-		System.out.print("\n\n");
+		System.out.print("\n");
 	}
 	
 	

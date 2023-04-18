@@ -11,15 +11,9 @@ import server.Server;
 public class GetUsersCommand extends Command{
 	@Override
 	public void execute(Server server, Socket s) throws IOException{
-		throw new IOException("Prueba");
-		/*try {
-			ObjectOutputStream out;
-			out = new ObjectOutputStream(s.getOutputStream());
-			server.sendUsersInfo(out);
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+		server.sendUsersInfo(out);
+		out.close();
 	}
 
 	@Override

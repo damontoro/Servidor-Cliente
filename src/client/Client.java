@@ -1,7 +1,6 @@
 package client;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
