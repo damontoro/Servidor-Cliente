@@ -37,8 +37,12 @@ public class Server {
 		}
 	}
 
-	public synchronized void addUser(User u){
+	public synchronized boolean addUser(User u){
+		if(users.containsKey(u.getId()))
+			return false;
+
 		users.put(u.getId(), u);
+		return true;
 	}
 	
 	public synchronized void removeUser(User u) {

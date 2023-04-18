@@ -1,5 +1,7 @@
 package server.commands;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import client.User;
@@ -11,8 +13,10 @@ public class LoginCommand extends Command {
 	private User u;
 	
 	@Override
-	public void execute(Server server, Socket s) {
-		server.addUser(u);
+	public void execute(Server server, Socket s) throws IOException{
+		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+		out.writeBoolean(server.addUser(u));
+		out.close();
 	}
 
 	@Override

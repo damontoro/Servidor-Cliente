@@ -3,9 +3,12 @@ package server;
 import java.net.Socket;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import client.User;
 import message.LoginMessage;
 import message.LogoffMessage;
+import message.ExceptionMessage;
 import message.Message;
 import server.commands.Command;
 
@@ -32,7 +35,7 @@ public class ClientHandler implements Runnable{
 			
 			server.printUsersInfo();
 		}
-		catch(IOException | ClassNotFoundException e){
+		catch(Exception e){
 			e.printStackTrace();
 		}
 	}

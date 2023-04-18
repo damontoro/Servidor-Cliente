@@ -40,12 +40,18 @@ public class Client implements Observable<ClientObserver>{
 
 			outStream.writeObject(new LoginMessage(user.getIp().getHostName(), Server.HOST, user));
 			outStream.flush();
-			
+
+			ObjectInputStream inStream = new ObjectInputStream(serverSocket.getInputStream());
+			connected = inStream.readBoolean();
+
+			inStream.close();
 			outStream.close();
 			serverSocket.close();
-			
-			connected = true;
-			
+
+
+			if(!connected)
+				throw new Exception("User already connected");
+
 			for(ClientObserver o : observers){
 				o.onConnect(Server.HOST, Server.PORT);
 			}

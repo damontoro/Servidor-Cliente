@@ -22,7 +22,7 @@ public abstract class Command {
 		throw new IllegalArgumentException ("[ERROR]: "+ UNKNOWN_COMMAND_MSG + "\n");
 	}
 
-	public abstract void execute(Server server, Socket s);
+	public abstract void execute(Server server, Socket s) throws Exception;
 
 	protected abstract Command parse(Message<?> message);
 }
