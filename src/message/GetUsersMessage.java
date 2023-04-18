@@ -5,8 +5,8 @@ public class GetUsersMessage extends Message<Void>{
 	
 	public static final String TYPE = "GetUsers";
 	
-	public GetUsersMessage(String origin, String destination) {
-		super(origin, destination, TYPE);
+	public GetUsersMessage() {
+		super(TYPE);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import message.GetUsersMessage;
 import message.LoginMessage;
 import message.LogoffMessage;
 import message.Message;
+import message.UsersConnectedMessage;
 import server.Server;
 
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class Client implements Observable<ClientObserver>{
 	public void connect() {
 		try{
 			Socket serverSocket = new Socket(Server.HOST, Server.PORT);
-			sendMessage(serverSocket, new LoginMessage(user.getIp().getHostName(), Server.HOST, user));
+			sendMessage(serverSocket, new LoginMessage(user));
 			ConnexionMessage reply = (ConnexionMessage) receiveMessage(serverSocket);
 			
 			connected = reply.retrieveInfo();
@@ -76,22 +77,10 @@ public class Client implements Observable<ClientObserver>{
 	public void requestUsers() {
 		try{
 			Socket serverSocket = new Socket(Server.HOST, Server.PORT);
+			sendMessage(serverSocket, new GetUsersMessage());
+			UsersConnectedMessage reply = (UsersConnectedMessage) receiveMessage(serverSocket);
 			
-			ObjectOutputStream outStream = new ObjectOutputStream(serverSocket.getOutputStream());
-			outStream.writeObject(new GetUsersMessage(user.getIp().getHostName(), Server.HOST));
-			outStream.flush();
-			
-			ObjectInputStream inStream = new ObjectInputStream(serverSocket.getInputStream());
-			
-			Set<String> users = new HashSet<String>();
-			int size = inStream.readInt();
-			for(int i = 0; i < size; ++i) {
-				users.add((String) inStream.readObject());
-			}
-			
-			outStream.close();
-			inStream.close();
-			serverSocket.close();
+			Set<String> users = reply.retrieveInfo();
 			
 			requestUsersSem.acquire();
 			for(ClientObserver o : observers){
@@ -113,7 +102,7 @@ public class Client implements Observable<ClientObserver>{
 				
 				ObjectOutputStream outStream = new ObjectOutputStream(serverSocket.getOutputStream());
 	
-				outStream.writeObject(new LogoffMessage(user.getIp().getHostName(), Server.HOST, user));
+				outStream.writeObject(new LogoffMessage(user));
 				outStream.flush();
 				
 				outStream.close();

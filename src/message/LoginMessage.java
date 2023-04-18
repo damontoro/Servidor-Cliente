@@ -9,8 +9,8 @@ public class LoginMessage extends Message<User>{
 	
 	private User user;
 
-	public LoginMessage(String origin, String destination, User user) {
-		super(origin, destination, TYPE);
+	public LoginMessage(User user) {
+		super(TYPE);
 		this.user = user;
 	}
 

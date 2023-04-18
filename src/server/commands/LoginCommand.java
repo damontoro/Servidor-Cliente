@@ -16,11 +16,7 @@ public class LoginCommand extends Command {
 	@Override
 	public void execute(Server server, Socket s) throws IOException{
 		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
-		out.writeObject(new ConnexionMessage(
-				Server.HOST,
-				s.getInetAddress().getHostName(),
-				server.addUser(u)
-		));
+		out.writeObject(new ConnexionMessage(server.addUser(u)));
 		out.close();
 	}
 

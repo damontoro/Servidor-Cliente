@@ -1,9 +1,12 @@
 package server;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import client.User;
+import message.UsersConnectedMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -50,10 +53,11 @@ public class Server {
 	}
 	
 	public synchronized void sendUsersInfo(ObjectOutputStream out) throws IOException {
-		out.writeInt(users.size());
-		for(String s : users.keySet()) {
-			out.writeObject(s);
+		Set<String> ids = new HashSet<String>();
+		for(String id : users.keySet()) {
+			ids.add(id);
 		}
+		out.writeObject(new UsersConnectedMessage(ids));
 	}
 	
 	public synchronized void printUsersInfo() {
