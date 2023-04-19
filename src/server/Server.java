@@ -26,13 +26,8 @@ public class Server {
 		try {
 			serverSocket = new ServerSocket(PORT);
 			while(true){
-				try{
-					Socket cliSocket = serverSocket.accept();
-					Thread t = new Thread(new ClientHandler(cliSocket, this));
-					t.start();
-				}catch(IOException e){
-					e.printStackTrace();
-				}
+				Socket cliSocket = serverSocket.accept();
+				new Thread(new ClientHandler(cliSocket, this)).start();
 			}
 		} 
 		catch (IOException e) {
@@ -52,12 +47,12 @@ public class Server {
 		users.remove(u.getId());
 	}
 	
-	public synchronized void sendUsersInfo(ObjectOutputStream out) throws IOException {
+	public synchronized void sendUsersInfo(ObjectOutputStream outStream) throws IOException {
 		Set<String> ids = new HashSet<String>();
 		for(String id : users.keySet()) {
 			ids.add(id);
 		}
-		out.writeObject(new UsersConnectedMessage(ids));
+		outStream.writeObject(new UsersConnectedMessage(ids));
 	}
 	
 	public synchronized void printUsersInfo() {

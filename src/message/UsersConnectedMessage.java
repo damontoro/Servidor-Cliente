@@ -2,8 +2,6 @@ package message;
 
 import java.util.Set;
 
-import client.User;
-
 public class UsersConnectedMessage extends Message<Set<String>>{
 	private static final long serialVersionUID = -2559063326443168543L;
 

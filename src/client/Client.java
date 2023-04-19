@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
-import message.ConnexionMessage;
+import message.ConnectedMessage;
 import message.GetUsersMessage;
 import message.LoginMessage;
 import message.LogoffMessage;
@@ -34,29 +34,27 @@ public class Client implements Observable<ClientObserver>{
 		requestUsersSem = new Semaphore(1);
 	}
 	
-	private void sendMessage(Socket s, Message<?> message) throws Exception {
+	private Message<?> communicateWithServer(Message<?> request) throws Exception {
+		Socket s = new Socket(Server.HOST, Server.PORT);
 		ObjectOutputStream outStream = new ObjectOutputStream(s.getOutputStream());
 
-		outStream.writeObject(message);
+		outStream.writeObject(request);
 		outStream.flush();
-	}
-	
-	private Message<?> receiveMessage(Socket s) throws Exception{
+		
 		ObjectInputStream inStream = new ObjectInputStream(s.getInputStream());
-		Message<?> m = (Message<?>) inStream.readObject();
+
+		Message<?> reply = (Message<?>) inStream.readObject();
 		
 		inStream.close();
+		outStream.close();
 		s.close();
 		
-		return m;
+		return reply;
 	}
-	
 
 	public void connect() {
 		try{
-			Socket serverSocket = new Socket(Server.HOST, Server.PORT);
-			sendMessage(serverSocket, new LoginMessage(user));
-			ConnexionMessage reply = (ConnexionMessage) receiveMessage(serverSocket);
+			ConnectedMessage reply = (ConnectedMessage) communicateWithServer(new LoginMessage(user));
 			
 			connected = reply.retrieveInfo();
 			
@@ -76,9 +74,7 @@ public class Client implements Observable<ClientObserver>{
 	
 	public void requestUsers() {
 		try{
-			Socket serverSocket = new Socket(Server.HOST, Server.PORT);
-			sendMessage(serverSocket, new GetUsersMessage());
-			UsersConnectedMessage reply = (UsersConnectedMessage) receiveMessage(serverSocket);
+			UsersConnectedMessage reply = (UsersConnectedMessage) communicateWithServer(new GetUsersMessage());
 			
 			Set<String> users = reply.retrieveInfo();
 			
@@ -98,15 +94,7 @@ public class Client implements Observable<ClientObserver>{
 	public void disconnect() {
 		if(connected) {
 			try{
-				Socket serverSocket = new Socket(Server.HOST,Server.PORT);
-				
-				ObjectOutputStream outStream = new ObjectOutputStream(serverSocket.getOutputStream());
-	
-				outStream.writeObject(new LogoffMessage(user));
-				outStream.flush();
-				
-				outStream.close();
-				serverSocket.close();
+				communicateWithServer(new LogoffMessage(user));
 				
 				connected = false;
 				
