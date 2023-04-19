@@ -2,6 +2,7 @@ package server;
 
 import java.net.Socket;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import message.LogoffMessage;
 import message.Message;
@@ -20,12 +21,13 @@ public class ClientHandler implements Runnable{
 	public void run() {
 		try{
 			Message<?> message;
+			ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+			ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 			do {
-	            ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 				message = (Message<?>) inStream.readObject();
 	
 				Command c = Command.getCommand(message);
-				c.execute(server, socket);
+				c.execute(server, outStream);
 			}
 			while(!message.getType().equals(LogoffMessage.TYPE));
 			socket.close();

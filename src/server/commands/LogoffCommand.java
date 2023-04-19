@@ -2,10 +2,9 @@ package server.commands;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 import client.User;
-import message.ConnectedMessage;
+import message.DisconnectedMessage;
 import message.LogoffMessage;
 import message.Message;
 import server.Server;
@@ -14,10 +13,9 @@ public class LogoffCommand extends Command {
 	private User u;
 	
 	@Override
-	public void execute(Server server, Socket s) throws IOException {
+	public void execute(Server server, ObjectOutputStream outStream) throws IOException {
 		server.removeUser(u);
-		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
-		out.writeObject(new ConnectedMessage(false));
+		outStream.writeObject(new DisconnectedMessage());
 	}
 
 	@Override

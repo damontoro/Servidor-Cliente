@@ -1,6 +1,6 @@
 package server.commands;
 
-import java.net.Socket;
+import java.io.ObjectOutputStream;
 
 import message.Message;
 import server.Server;
@@ -22,7 +22,7 @@ public abstract class Command {
 		throw new IllegalArgumentException ("[ERROR]: "+ UNKNOWN_COMMAND_MSG + "\n");
 	}
 
-	public abstract void execute(Server server, Socket s) throws Exception;
+	public abstract void execute(Server server, ObjectOutputStream outStream) throws Exception;
 
 	protected abstract Command parse(Message<?> message);
 }
