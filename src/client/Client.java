@@ -9,7 +9,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
 
 import message.ConnectedMessage;
 import message.GetUsersMessage;
@@ -25,35 +24,30 @@ public class Client implements Observable<ClientObserver>{
 	private User user;
 	private List<ClientObserver> observers;
 	private boolean connected;
-	private Semaphore requestUsersSem;
+	private Socket serverSocket;
 
 	public Client() throws UnknownHostException {
 		user = new User(getIp());
 		observers = new ArrayList<ClientObserver>();
 		connected = false;
-		requestUsersSem = new Semaphore(1);
 	}
 	
 	private Message<?> communicateWithServer(Message<?> request) throws Exception {
-		Socket s = new Socket(Server.HOST, Server.PORT);
-		ObjectOutputStream outStream = new ObjectOutputStream(s.getOutputStream());
+		ObjectOutputStream outStream = new ObjectOutputStream(serverSocket.getOutputStream());
 
 		outStream.writeObject(request);
 		outStream.flush();
 		
-		ObjectInputStream inStream = new ObjectInputStream(s.getInputStream());
+		ObjectInputStream inStream = new ObjectInputStream(serverSocket.getInputStream());
 
 		Message<?> reply = (Message<?>) inStream.readObject();
-		
-		inStream.close();
-		outStream.close();
-		s.close();
 		
 		return reply;
 	}
 
 	public void connect() {
 		try{
+			serverSocket = new Socket(Server.HOST, Server.PORT);
 			ConnectedMessage reply = (ConnectedMessage) communicateWithServer(new LoginMessage(user));
 			
 			connected = reply.retrieveInfo();
@@ -78,11 +72,9 @@ public class Client implements Observable<ClientObserver>{
 			
 			Set<String> users = reply.retrieveInfo();
 			
-			requestUsersSem.acquire();
 			for(ClientObserver o : observers){
 				o.onUsersRequested(users);
 			}
-			requestUsersSem.release();
 		}
 		catch(Exception e){
 			for(ClientObserver o : observers){
@@ -97,6 +89,7 @@ public class Client implements Observable<ClientObserver>{
 				communicateWithServer(new LogoffMessage(user));
 				
 				connected = false;
+				serverSocket.close();
 				
 				for(ClientObserver o : observers){
 					o.onDisconnect(Server.HOST, Server.PORT);

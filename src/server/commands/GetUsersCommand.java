@@ -13,7 +13,6 @@ public class GetUsersCommand extends Command{
 	public void execute(Server server, Socket s) throws IOException{
 		ObjectOutputStream outStream = new ObjectOutputStream(s.getOutputStream());
 		server.sendUsersInfo(outStream);
-		outStream.close();
 	}
 
 	@Override

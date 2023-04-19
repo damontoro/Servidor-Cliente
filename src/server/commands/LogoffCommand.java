@@ -18,7 +18,6 @@ public class LogoffCommand extends Command {
 		server.removeUser(u);
 		ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 		out.writeObject(new ConnectedMessage(false));
-		out.close();
 	}
 
 	@Override

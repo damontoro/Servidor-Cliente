@@ -3,6 +3,7 @@ package server;
 import java.net.Socket;
 import java.io.ObjectInputStream;
 
+import message.LogoffMessage;
 import message.Message;
 import server.commands.Command;
 
@@ -18,13 +19,15 @@ public class ClientHandler implements Runnable{
 	@Override
 	public void run() {
 		try{
-            ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-			Message<?> message = (Message<?>) inStream.readObject();
-
-			Command c = Command.getCommand(message);
-			c.execute(server, socket);
-			
-			inStream.close();
+			Message<?> message;
+			do {
+	            ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+				message = (Message<?>) inStream.readObject();
+	
+				Command c = Command.getCommand(message);
+				c.execute(server, socket);
+			}
+			while(!message.getType().equals(LogoffMessage.TYPE));
 			socket.close();
 		}
 		catch(Exception e){
