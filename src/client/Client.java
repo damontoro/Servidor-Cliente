@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+import message.GetFileMessage;
 import message.GetUsersMessage;
 import message.LoginMessage;
 import message.LogoffMessage;
@@ -60,6 +61,32 @@ public class Client implements Observable<ClientObserver>{
 			outSS.writeObject(new GetUsersMessage());
 		}
 		catch(Exception e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	public void requestFile(String name){
+		try{
+			outSS.writeObject(new GetFileMessage(name));
+		}
+		catch(Exception e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	public void searchFile(String name){
+		try{
+			if(user.getSharedInfo().contains(name)){
+				outSS.writeObject(new FileFoundMessage(name));
+			}
+			else{
+				outSS.writeObject(new FileNotFoundMessage(name));
+			}
+		}catch(Exception e){
 			for(ClientObserver o : observers){
 				o.onError(e.getMessage());
 			}

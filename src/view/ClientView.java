@@ -21,6 +21,7 @@ public class ClientView extends JFrame implements ClientObserver{
 	private JButton login;
 	private JButton requestUsers;
 	private JButton logoff;
+	private JButton requestFile;
 	
 	public ClientView(Controller c){
 		super("Client");
@@ -31,6 +32,7 @@ public class ClientView extends JFrame implements ClientObserver{
 	
 	private void initGUI() {
 		this.setLayout(new BorderLayout());
+
 		login = new JButton("Login");
 		login.addActionListener(new ActionListener(){
 			@Override
@@ -50,6 +52,15 @@ public class ClientView extends JFrame implements ClientObserver{
 		});
 		requestUsers.setVisible(false);
 		
+		requestFile = new JButton("RequestFile");
+		requestFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String name = JOptionPane.showInputDialog("Escribe el nombre del archivo");
+				controller.requestFile(name);
+			}
+		});
+
 		logoff = new JButton("Logoff");
 		logoff.addActionListener(new ActionListener(){
 			@Override
@@ -58,6 +69,7 @@ public class ClientView extends JFrame implements ClientObserver{
 			}
 		});
 		logoff.setVisible(false);
+
 
 		add(login, BorderLayout.WEST);
 		add(requestUsers, BorderLayout.CENTER);

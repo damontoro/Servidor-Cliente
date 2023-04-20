@@ -14,7 +14,7 @@ public class LoginCommand extends Command {
 	
 	@Override
 	public void execute(Server server, ObjectOutputStream outStream) throws IOException{
-		outStream.writeObject(new ConnexionMessage(server.addUser(u)));
+		outStream.writeObject(new ConnexionMessage(server.addUser(u, outStream)));
 	}
 
 	@Override

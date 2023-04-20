@@ -20,19 +20,11 @@ public class Controller {
 	}
 	
 	public void requestUsers() {
-		new Thread(new Runnable() {
-			Client c;
-			@Override
-			public void run() {
-				c.requestUsers();
-			}
-			
-			Runnable init(Client c) {
-				this.c = c;
-				return this;
-			}
-			
-		}.init(client)).start();
+		client.requestUsers();
+	}
+
+	public void requestFile(String name) {
+		client.requestFile(name);
 	}
 	
 	public void disconnect() {
