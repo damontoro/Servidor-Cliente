@@ -4,6 +4,9 @@ Implementación de un Servidor y un Cliente. El servidor funciona como proxy par
 
 TODO:
 
+	IMPORTANTE: 
+		Notificar actualizar el usuario y el servidor cuando acaba la descarga del archivo
+
 	Revisar que vuelva al login si el server se cierra
 	Pedir IP en el cliente
 	Si se termina forzando el programa no se desconecta

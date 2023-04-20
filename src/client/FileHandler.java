@@ -35,11 +35,10 @@ public class FileHandler implements Runnable{
 			while((count = in.read(buffer)) >= 0){
 				out.write(buffer, 0, count);
 			}
+			//TODO Notificar al usuario y al servidor que el archivo se ha descargado
+
 			out.close();
 			in.close();
-
-
-			//Notificamos al server que ahora tenemos el archivo
 
 		}catch(Exception e){
 			e.printStackTrace();
