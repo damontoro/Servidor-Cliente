@@ -1,8 +1,7 @@
 package client.commands;
 
-import java.io.ObjectOutputStream;
-
 import message.Message;
+import message.RequestFileMessage;
 import client.Client;
 
 public class RequestFileCommand extends ClientCommand{
@@ -16,8 +15,8 @@ public class RequestFileCommand extends ClientCommand{
 
 	@Override
 	public ClientCommand parse(Message<?> message) {
-		if(message.getType().equals("RequestFile")){
-			name = (String) message.retrieveInfo();
+		if(message.getType().equals(RequestFileMessage.TYPE)){
+			name = ((RequestFileMessage) message).retrieveInfo();
 			return this;
 		}
 		return null;

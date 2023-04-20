@@ -2,10 +2,9 @@ package client;
 
 import java.io.ObjectInputStream;
 
-import message.ConnexionMessage;
+import client.commands.ClientCommand;
 import message.DisconnectedMessage;
 import message.Message;
-import message.UsersConnectedMessage;
 
 
 public class ServerHandler implements Runnable{
@@ -24,15 +23,8 @@ public class ServerHandler implements Runnable{
 			do {
 				message = (Message<?>) inSS.readObject();
 	
-				if(message.getType().equals(ConnexionMessage.TYPE)) {
-					client.onConnexionEstablished(((ConnexionMessage) message).retrieveInfo());	
-				}
-				else if(message.getType().equals(UsersConnectedMessage.TYPE)) {
-					client.onUsersRequested(((UsersConnectedMessage) message).retrieveInfo());
-				}
-				else {
-					client.onDisconnect();
-				}
+				ClientCommand c = ClientCommand.getCommand(message);
+				c.execute(client);
 			}
 			while(!message.getType().equals(DisconnectedMessage.TYPE));
 		}

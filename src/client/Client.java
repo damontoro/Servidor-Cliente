@@ -10,8 +10,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
 
+import message.FileFoundMessage;
+import message.FileNotFoundMessage;
 import message.GetFileMessage;
 import message.GetUsersMessage;
 import message.LoginMessage;

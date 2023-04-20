@@ -1,8 +1,9 @@
 package message;
 
 public class RequestFileMessage extends Message<String>{
+	private static final long serialVersionUID = -9189707024340126403L;
 
-	private static final String TYPE = "RequestFile";
+	public static final String TYPE = "RequestFile";
 
 	private String fileName;
 

@@ -19,7 +19,7 @@ public class FindFileCommand extends Command{
 	@Override
 	protected Command parse(Message<?> message) {
 		if(message.getType().equals(GetFileMessage.TYPE)) {
-			name = (String) message.retrieveInfo();
+			name = ((GetFileMessage) message).retrieveInfo();
 			return this;
 		}
 		return null;
