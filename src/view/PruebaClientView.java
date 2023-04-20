@@ -43,10 +43,9 @@ public class PruebaClientView extends JFrame implements ClientObserver{
 
 		//TODO Cambiar lo de abajo y hacer una llamada a controller.getFiles()
 		JScrollPane scroll = new JScrollPane(new FilesView(controller, Arrays.asList("Libro1.txt","Libro2.txt"
-		,"Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt"
-		,"Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt")));
+		,"Libro2aaaaaaaaaaaaaaaa.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt")));
 
-		scroll.setPreferredSize(new Dimension(150, 300));
+		scroll.setPreferredSize(new Dimension(150, 250));
 		scroll.getVerticalScrollBar().setUnitIncrement(10);
 
 		filesPanel = createViewPanel(scroll, "Files");
