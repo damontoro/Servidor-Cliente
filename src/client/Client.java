@@ -29,13 +29,11 @@ public class Client implements Observable<ClientObserver>{
 	private ObjectInputStream inSS;
 	
 	private Thread serverListener;
-	public Semaphore readFromServer;
 
 	public Client() throws UnknownHostException {
 		user = new User(getIp());
 		observers = new ArrayList<ClientObserver>();
 		connected = false;
-		readFromServer = new Semaphore(0);
 	}
 
 	public void connect() {
@@ -44,7 +42,6 @@ public class Client implements Observable<ClientObserver>{
 			outSS = new ObjectOutputStream(serverSocket.getOutputStream());
 			
 			outSS.writeObject(new LoginMessage(user));
-			readFromServer.release();
 			
 			inSS = new ObjectInputStream(serverSocket.getInputStream());
 			
@@ -61,7 +58,6 @@ public class Client implements Observable<ClientObserver>{
 	public void requestUsers() {
 		try{
 			outSS.writeObject(new GetUsersMessage());
-			readFromServer.release();
 		}
 		catch(Exception e){
 			for(ClientObserver o : observers){
@@ -74,7 +70,6 @@ public class Client implements Observable<ClientObserver>{
 		if(connected) {
 			try{
 				outSS.writeObject(new LogoffMessage(user));
-				readFromServer.release();
 			}
 			catch(Exception e){
 				for(ClientObserver o : observers){

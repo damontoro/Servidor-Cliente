@@ -22,7 +22,6 @@ public class ServerHandler implements Runnable{
 		try{
 			Message<?> message;
 			do {
-				client.readFromServer.acquire();
 				message = (Message<?>) inSS.readObject();
 	
 				if(message.getType().equals(ConnexionMessage.TYPE)) {
