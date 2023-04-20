@@ -29,15 +29,7 @@ public class FileHandler implements Runnable{
 			//Leemos el archivo
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			File f = (File) in.readObject();
-
-			System.out.println("Llegamos al fileOutputStream\n" + f.toString());
-			//Lo guardamos en la carpeta de descargas
-			FileOutputStream out = new FileOutputStream("data" + File.separator + 
-														cli.getName() + File.separator + 
-														f.getName());
-			
-
-			//Actualizamos mi lista local de archivos y la del server
+			System.out.println(f.toString());
 
 		}catch(Exception e){
 			e.printStackTrace();

@@ -96,7 +96,7 @@ public class UsersInfo {
 		return user.getId() ;
 	}
 	
-	public synchronized void sendUsersInfo(ObjectOutputStream outStream, String destination) throws Exception {
+	public void sendUsersInfo(ObjectOutputStream outStream, String destination) throws Exception {
 		mapaUsuarios.acquire();
 		
 		Set<String> ids = new HashSet<String>();
@@ -108,7 +108,7 @@ public class UsersInfo {
 		mapaUsuarios.release();
 	}
 	
-	public synchronized void printUsersInfo() throws InterruptedException {
+	public void printUsersInfo() throws InterruptedException {
 		mapaUsuarios.acquire();
 		
 		if(users.size() == 0) {
