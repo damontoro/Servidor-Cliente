@@ -7,8 +7,8 @@ public class FileFoundMessage extends Message<String> {
 	
 	private String name;
 
-	public FileFoundMessage(String name) {
-		super(TYPE);
+	public FileFoundMessage(String origin, String destination, String name) {
+		super(origin, destination, TYPE);
 		this.name = name;
 	}
 

@@ -1,6 +1,5 @@
 package server.commands;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import client.User;
@@ -9,18 +8,24 @@ import message.LoginMessage;
 import message.Message;
 import server.Server;
 
-public class LoginCommand extends Command {
-	private User u;
+public class LoginCommand extends ServerCommand {
+	private String origin;
+	private User user;
 	
 	@Override
-	public void execute(Server server, ObjectOutputStream outStream) throws IOException{
-		outStream.writeObject(new ConnexionMessage(server.addUser(u, outStream)));
+	public void execute(Server server, ObjectOutputStream outStream) throws Exception{
+		outStream.writeObject(new ConnexionMessage(
+				"server",
+				origin,
+				server.addUser(user, outStream)
+		));
 	}
 
 	@Override
-	protected Command parse(Message<?> message) {
+	protected ServerCommand parse(Message<?> message) {
 		if(message.getType().equals(LoginMessage.TYPE)) {
-			u = ((LoginMessage) message).retrieveInfo();
+			origin = message.getOrigin();
+			user = ((LoginMessage) message).retrieveInfo();
 			return this;
 		}
 		else

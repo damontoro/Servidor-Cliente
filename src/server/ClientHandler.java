@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 
 import message.LogoffMessage;
 import message.Message;
-import server.commands.Command;
+import server.commands.ServerCommand;
 
 public class ClientHandler implements Runnable{
 	private Socket socket;
@@ -26,10 +26,9 @@ public class ClientHandler implements Runnable{
 			do {
 				message = (Message<?>) inStream.readObject();
 	
-				Command c = Command.getCommand(message);
+				ServerCommand c = ServerCommand.getCommand(message);
 				c.execute(server, outStream);
-			}
-			while(!message.getType().equals(LogoffMessage.TYPE));
+			} while(!message.getType().equals(LogoffMessage.TYPE));
 			socket.close();
 		}
 		catch(Exception e){

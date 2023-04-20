@@ -1,6 +1,5 @@
 package server.commands;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import client.User;
@@ -9,23 +8,24 @@ import message.LogoffMessage;
 import message.Message;
 import server.Server;
 
-public class LogoffCommand extends Command {
-	private User u;
+public class LogoffCommand extends ServerCommand {
+	private String origin;
+	private User user;
 	
 	@Override
-	public void execute(Server server, ObjectOutputStream outStream) throws IOException {
-		server.removeUser(u);
-		outStream.writeObject(new DisconnectedMessage());
+	public void execute(Server server, ObjectOutputStream outStream) throws Exception {
+		server.removeUser(user);
+		outStream.writeObject(new DisconnectedMessage("server", origin));
 	}
 
 	@Override
-	protected Command parse(Message<?> message) {
+	protected ServerCommand parse(Message<?> message) {
 		if(message.getType().equals(LogoffMessage.TYPE)) {
-			u = ((LogoffMessage) message).retrieveInfo();
+			origin = message.getOrigin();
+			user = ((LogoffMessage) message).retrieveInfo();
 			return this;
 		}
 		else
 			return null;
 	}
-
 }

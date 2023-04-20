@@ -5,8 +5,8 @@ public class DisconnectedMessage extends Message<Void>{
 	
 	public static final String TYPE = "Disconnected";
 	
-	public DisconnectedMessage () {
-		super(TYPE);
+	public DisconnectedMessage (String origin, String destination) {
+		super(origin, destination, TYPE);
 	}
 
 	@Override

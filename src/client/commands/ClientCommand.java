@@ -11,7 +11,9 @@ public abstract class ClientCommand {
 		new ConnexionCommand(),
 		new DisconnectedCommand(),
 		new UsersConnectedCommand(),
-		new RequestFileCommand()
+		new RequestFileCommand(),
+		new FileFoundCommand(),
+		new FileNotFoundCommand()
 	};
 
 	public static ClientCommand getCommand(Message<?> message) throws IllegalArgumentException {

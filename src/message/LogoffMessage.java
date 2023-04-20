@@ -9,8 +9,8 @@ public class LogoffMessage extends Message<User>{
 	
 	private User user;
 
-	public LogoffMessage(User user) {
-		super(TYPE);
+	public LogoffMessage(String origin, String destination, User user) {
+		super(origin, destination, TYPE);
 		this.user = user;
 	}
 

@@ -9,8 +9,8 @@ public class UsersConnectedMessage extends Message<Set<String>>{
 	
 	private Set<String> users;
 
-	public UsersConnectedMessage(Set<String> users) {
-		super(TYPE);
+	public UsersConnectedMessage(String origin, String destination, Set<String> users) {
+		super(origin, destination, TYPE);
 		this.users = users;
 	}
 

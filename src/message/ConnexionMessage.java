@@ -7,8 +7,8 @@ public class ConnexionMessage extends Message<Boolean> {
 	
 	private boolean connected;
 	
-	public ConnexionMessage(boolean connected) {
-		super(TYPE);
+	public ConnexionMessage(String origin, String destination, boolean connected) {
+		super(origin, destination, TYPE);
 		this.connected = connected;
 	}
 

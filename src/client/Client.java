@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import message.FileFoundMessage;
 import message.FileNotFoundMessage;
 import message.GetFileMessage;
@@ -43,7 +45,7 @@ public class Client implements Observable<ClientObserver>{
 			serverSocket = new Socket(Server.HOST, Server.PORT);
 			outSS = new ObjectOutputStream(serverSocket.getOutputStream());
 			
-			outSS.writeObject(new LoginMessage(user));
+			outSS.writeObject(new LoginMessage(user.getId(), "server", user));
 			
 			inSS = new ObjectInputStream(serverSocket.getInputStream());
 			
@@ -59,7 +61,7 @@ public class Client implements Observable<ClientObserver>{
 	
 	public void requestUsers() {
 		try{
-			outSS.writeObject(new GetUsersMessage());
+			outSS.writeObject(new GetUsersMessage(user.getId(), "server"));
 		}
 		catch(Exception e){
 			for(ClientObserver o : observers){
@@ -70,7 +72,7 @@ public class Client implements Observable<ClientObserver>{
 
 	public void requestFile(String name){
 		try{
-			outSS.writeObject(new GetFileMessage(name));
+			outSS.writeObject(new GetFileMessage(user.getId(), "server", name));
 		}
 		catch(Exception e){
 			for(ClientObserver o : observers){
@@ -79,13 +81,13 @@ public class Client implements Observable<ClientObserver>{
 		}
 	}
 
-	public void searchFile(String name){
+	public void searchFile(String name, String requester){
 		try{
 			if(user.getSharedInfo().contains(name)){
-				outSS.writeObject(new FileFoundMessage(name));
+				outSS.writeObject(new FileFoundMessage(user.getId(), requester, name));
 			}
 			else{
-				outSS.writeObject(new FileNotFoundMessage(name));
+				outSS.writeObject(new FileNotFoundMessage(user.getId(), requester, name));
 			}
 		}catch(Exception e){
 			for(ClientObserver o : observers){
@@ -97,7 +99,7 @@ public class Client implements Observable<ClientObserver>{
 	public void disconnect() {
 		if(connected) {
 			try{
-				outSS.writeObject(new LogoffMessage(user));
+				outSS.writeObject(new LogoffMessage(user.getId(), "server", user));
 			}
 			catch(Exception e){
 				for(ClientObserver o : observers){
@@ -125,6 +127,14 @@ public class Client implements Observable<ClientObserver>{
 		for(ClientObserver o : observers){
 			o.onUsersRequested(users);
 		}
+	}
+	
+	public void onPeerFounded(String peer, String file) {
+		JOptionPane.showMessageDialog(null, "El compañero " + peer + " tiene el archivo " + file);
+	}
+	
+	public void onFileNotFounded(String file) {
+		JOptionPane.showMessageDialog(null, file + " no esta en el sistema");
 	}
 	
 	public void onDisconnect() {

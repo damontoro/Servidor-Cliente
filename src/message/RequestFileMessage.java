@@ -7,8 +7,8 @@ public class RequestFileMessage extends Message<String>{
 
 	private String fileName;
 
-	public RequestFileMessage(String name) {
-		super(TYPE);
+	public RequestFileMessage(String origin, String destination, String name) {
+		super(origin, destination, TYPE);
 		fileName = name;
 	}
 

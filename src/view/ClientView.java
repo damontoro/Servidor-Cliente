@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 
-import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -31,15 +31,17 @@ public class ClientView extends JFrame implements ClientObserver{
 	}
 	
 	private void initGUI() {
-		this.setLayout(new BorderLayout());
+		this.setLayout(new FlowLayout());
 
 		login = new JButton("Login");
 		login.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String name = JOptionPane.showInputDialog("Escribe tu id");
-				controller.initClient(name);
-				controller.connect();
+				if(name != null) {
+					controller.initClient(name);
+					controller.connect();
+				}
 			}
 		});
 		
@@ -57,9 +59,11 @@ public class ClientView extends JFrame implements ClientObserver{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String name = JOptionPane.showInputDialog("Escribe el nombre del archivo");
-				controller.requestFile(name);
+				if(name != null)
+					controller.requestFile(name);
 			}
 		});
+		requestFile.setVisible(false);
 
 		logoff = new JButton("Logoff");
 		logoff.addActionListener(new ActionListener(){
@@ -71,9 +75,10 @@ public class ClientView extends JFrame implements ClientObserver{
 		logoff.setVisible(false);
 
 
-		add(login, BorderLayout.WEST);
-		add(requestUsers, BorderLayout.CENTER);
-		add(logoff, BorderLayout.EAST);
+		add(login);
+		add(requestUsers);
+		add(requestFile);
+		add(logoff);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(400, 400);
@@ -97,6 +102,7 @@ public class ClientView extends JFrame implements ClientObserver{
 		JOptionPane.showMessageDialog(this, "Connected to " + host + ":" + port);
 		login.setVisible(false);
 		requestUsers.setVisible(true);
+		requestFile.setVisible(true);
 		logoff.setVisible(true);
 		ClientView.this.repaint();
 	}
@@ -110,6 +116,7 @@ public class ClientView extends JFrame implements ClientObserver{
 	public void onDisconnect(String host, int port) {
 		JOptionPane.showMessageDialog(this, "Disconnected from " + host + ":" + port);
 		requestUsers.setVisible(false);
+		requestFile.setVisible(false);
 		logoff.setVisible(false);
 		login.setVisible(true);
 		ClientView.this.repaint();

@@ -25,8 +25,7 @@ public class ServerHandler implements Runnable{
 	
 				ClientCommand c = ClientCommand.getCommand(message);
 				c.execute(client);
-			}
-			while(!message.getType().equals(DisconnectedMessage.TYPE));
+			} while(!message.getType().equals(DisconnectedMessage.TYPE));
 		}
 		catch(Exception e){
 			e.printStackTrace();

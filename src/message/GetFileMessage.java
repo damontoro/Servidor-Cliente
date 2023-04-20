@@ -7,8 +7,8 @@ public class GetFileMessage extends Message<String>{
 	
 	private String name;
 
-	public GetFileMessage(String name) {
-		super(TYPE);
+	public GetFileMessage(String origin, String destination, String name) {
+		super(origin, destination, TYPE);
 		this.name = name;
 	}
 
