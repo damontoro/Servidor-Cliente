@@ -3,29 +3,35 @@ package view;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 import java.util.Set;
 
 import client.ClientObserver;
 import controller.Controller;
 
-public class ClientView extends JFrame implements ClientObserver{
+public class PruebaClientView extends JFrame implements ClientObserver{
 	private static final long serialVersionUID = 2361740682291028404L;
 	
 	private Controller controller;
 	private JButton login;
-	private JButton requestUsers;
-	private JButton logoff;
-	private JButton requestFile;
 	private JPanel filesPanel;
+	private JPanel leftPanel;
 	
-	public ClientView(Controller c){
+	public PruebaClientView(Controller c){
 		super("Client");
 		controller = c;
 		controller.addObserver(this);
@@ -34,7 +40,21 @@ public class ClientView extends JFrame implements ClientObserver{
 	
 	private void initGUI() {
 		this.setLayout(new FlowLayout());
-		//filesPanel = new FilesView(controller, controller.getFiles());
+
+		//TODO Cambiar lo de abajo y hacer una llamada a controller.getFiles()
+		JScrollPane scroll = new JScrollPane(new FilesView(controller, Arrays.asList("Libro1.txt","Libro2.txt"
+		,"Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt"
+		,"Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt","Libro2.txt")));
+
+		scroll.setPreferredSize(new Dimension(150, 300));
+		scroll.getVerticalScrollBar().setUnitIncrement(10);
+
+		filesPanel = createViewPanel(scroll, "Files");
+
+		leftPanel = createViewPanel(new LeftPanel(controller), "Actions");
+
+		filesPanel.setVisible(false);
+		leftPanel.setVisible(false);
 
 		login = new JButton("Login");
 		login.addActionListener(new ActionListener(){
@@ -47,44 +67,13 @@ public class ClientView extends JFrame implements ClientObserver{
 				}
 			}
 		});
-		
-		requestUsers = new JButton("RequestUsers");
-		requestUsers.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				controller.requestUsers();
-			}
-		});
-		requestUsers.setVisible(false);
-		
-		requestFile = new JButton("RequestFile");
-		requestFile.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String name = JOptionPane.showInputDialog("Escribe el nombre del archivo");
-				if(name != null)
-					controller.requestFile(name);
-			}
-		});
-		requestFile.setVisible(false);
-
-		logoff = new JButton("Logoff");
-		logoff.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				controller.disconnect();
-			}
-		});
-		logoff.setVisible(false);
-
 
 		add(login);
-		add(requestUsers);
-		add(requestFile);
-		add(logoff);
-		
+		add(filesPanel);
+		add(leftPanel);
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(400, 400);
+		setSize(600, 400);
 		setVisible(true);
 		
 		this.addWindowListener(new WindowAdapter() {
@@ -93,6 +82,15 @@ public class ClientView extends JFrame implements ClientObserver{
 	            System.exit(0);
 	        }
 		});
+	}
+
+	private JPanel createViewPanel(JComponent c, String title) {
+		JPanel p = new JPanel();
+		p.setLayout(new GridLayout(1, 1));
+		Border b = BorderFactory.createLineBorder(Color.black, 2);
+		p.setBorder(BorderFactory.createTitledBorder(b, title));
+		p.add(c);
+		return p;
 	}
 
 	@Override
@@ -104,10 +102,9 @@ public class ClientView extends JFrame implements ClientObserver{
 	public void onConnect(String host, int port) {
 		JOptionPane.showMessageDialog(this, "Connected to " + host + ":" + port);
 		login.setVisible(false);
-		requestUsers.setVisible(true);
-		requestFile.setVisible(true);
-		logoff.setVisible(true);
-		ClientView.this.repaint();
+		filesPanel.setVisible(true);
+		leftPanel.setVisible(true);
+		PruebaClientView.this.repaint();
 	}
 
 	@Override
@@ -118,10 +115,11 @@ public class ClientView extends JFrame implements ClientObserver{
 	@Override
 	public void onDisconnect(String host, int port) {
 		JOptionPane.showMessageDialog(this, "Disconnected from " + host + ":" + port);
-		requestUsers.setVisible(false);
-		requestFile.setVisible(false);
-		logoff.setVisible(false);
+		filesPanel.setVisible(false);
+		leftPanel.setVisible(false);
 		login.setVisible(true);
-		ClientView.this.repaint();
+		PruebaClientView.this.repaint();
 	}
+
+	
 }
