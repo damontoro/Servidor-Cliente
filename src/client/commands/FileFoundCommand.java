@@ -10,7 +10,7 @@ public class FileFoundCommand extends ClientCommand{
 
 	@Override
 	public void execute(Client cli) {
-		cli.onPeerFounded(peer, file);
+		cli.onPeerFound(peer, file);
 	}
 
 	@Override

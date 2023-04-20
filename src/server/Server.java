@@ -6,7 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import client.User;
 import message.FileFoundMessage;
 import message.FileNotFoundMessage;
+import message.P2PInfo;
 import message.RequestFileMessage;
+import message.StartConnectionMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -52,25 +54,35 @@ public class Server {
 		usersInfo.removeUser(u);
 	}
 	
+	public void sendP2PInfo(String destination, P2PInfo info) throws IOException {
+		ObjectOutputStream outStream = userStreams.get(destination);
+		outStream.writeObject(new StartConnectionMessage(null, destination, info));
+	}
+
 	public void sendUsersInfo(ObjectOutputStream out, String destination) throws Exception {
 		usersInfo.sendUsersInfo(out, destination);
 	}
 	
-	public String findUserWithFile(String name) throws InterruptedException {
-		return usersInfo.findUserWithFile(name);
+	public String findUserWithFile(String file) throws InterruptedException {
+		return usersInfo.findUserWithFile(file);
 	}
-	
+
 	public void requestFile(String origin, String destination, String file) throws IOException {
 		ObjectOutputStream outStream = userStreams.get(destination);
 		outStream.writeObject(new RequestFileMessage(origin, destination, file));
 	}
 	
-	public void fileFounded(String origin, String destination, String file) throws IOException {
+	public void fileFound(String origin, String destination, String file) throws IOException {
 		ObjectOutputStream outStream = userStreams.get(destination);
 		outStream.writeObject(new FileFoundMessage(origin, destination, file));
 	}
+
+	public String manageMissingFile(String origin, String destination, String file) throws Exception {
+		usersInfo.removeFile(file, origin);
+		return findUserWithFile(file);
+	}
 	
-	public void fileNotFounded(String origin, String destination, String file) throws IOException{
+	public void fileNotFound(String origin, String destination, String file) throws IOException{
 		ObjectOutputStream outStream = userStreams.get(destination);
 		outStream.writeObject(new FileNotFoundMessage(origin, destination, file));
 	}

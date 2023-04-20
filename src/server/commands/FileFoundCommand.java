@@ -13,7 +13,7 @@ public class FileFoundCommand extends ServerCommand{
 
 	@Override
 	public void execute(Server server, ObjectOutputStream outStream) throws Exception {
-		server.fileFounded(origin, destination, file);
+		server.fileFound(origin, destination, file);
 	}
 
 	@Override

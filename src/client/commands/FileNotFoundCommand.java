@@ -9,7 +9,7 @@ public class FileNotFoundCommand extends ClientCommand{
 
 	@Override
 	public void execute(Client cli) {
-		cli.onFileNotFounded(file);
+		cli.onFileNotFound(file);
 	}
 
 	@Override

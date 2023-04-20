@@ -14,12 +14,12 @@ import utils.Pair;
 
 public class UsersInfo {
 	private Map<String, User> users;
-	private Map<String, PriorityQueue<Pair<String, Integer>>> files;
+	private Map<String, PriorityQueue<UserPriority>> files;
 	private Semaphore mapaUsuarios, mapaFicheros;
 	
 	public UsersInfo() {
 		users = new HashMap<String, User>();
-		files = new HashMap<String, PriorityQueue<Pair<String, Integer>>>();
+		files = new HashMap<String, PriorityQueue<UserPriority>>();
 		mapaUsuarios = new Semaphore(1);
 		mapaFicheros = new Semaphore(1);
 	}
@@ -37,9 +37,9 @@ public class UsersInfo {
 		mapaFicheros.acquire();
 		for(String file : u.getSharedInfo()){
 			if(!files.containsKey(file)){
-				files.put(file, new PriorityQueue<Pair<String, Integer>>((a, b) -> a.getSecond() - b.getSecond()));
+				files.put(file, new PriorityQueue<UserPriority>((a, b) -> a.getPriority() - b.getPriority()));
 			}
-			files.get(file).add(new Pair<String, Integer>(u.getId(), 0));
+			files.get(file).add(new UserPriority(u.getId(), 0));
 		}
 		
 		mapaFicheros.release();
@@ -54,6 +54,20 @@ public class UsersInfo {
 		
 		mapaUsuarios.release();
 	}
+
+	public void removeFile(String file, String user) throws InterruptedException {
+		mapaUsuarios.acquire();
+		if(!users.containsKey(user)) {
+			mapaUsuarios.release();
+			return;
+		}
+		users.get(user).removeFile(file);
+		mapaUsuarios.release();
+
+		mapaFicheros.acquire();
+		files.get(file).remove(new UserPriority(user, 0));
+		mapaFicheros.release();
+	}
 	
 	public String findUserWithFile(String name) throws InterruptedException{
 		mapaFicheros.acquire();
@@ -62,13 +76,25 @@ public class UsersInfo {
 			mapaFicheros.release();
 			return null;
 		}
-		
-		Pair<String, Integer> user = files.get(name).poll();
-		files.get(name).add(new Pair<String, Integer>(user.getFirst(), user.getSecond() + 1));
-		
+		UserPriority user;
+
+		//Lo hacemos así para comprobar que el supuesto usuario que tiene el archivo está conectado,
+		//No lo quitamos de la cola en el log off para que el coste de ese metodo sea menor
+		do{
+			user = files.get(name).poll();
+		}while(user != null && !users.containsKey(user.getId()));
+
+		//Comprobamos si el usuario devuelto está conectado (en el caso de que el ultimo de la cola no lo esté)
+		if(user == null){
+			mapaFicheros.release();
+			return null;
+		}
+
+		files.get(name).add(new UserPriority(user.getId(), user.getPriority() + 1));
 		mapaFicheros.release();
 		
-		return user.getFirst();
+		//Comprobamos si el usuario es correcto
+		return user.getId() ;
 	}
 	
 	public synchronized void sendUsersInfo(ObjectOutputStream outStream, String destination) throws Exception {
@@ -103,5 +129,31 @@ public class UsersInfo {
 		System.out.print("\n");
 		
 		mapaUsuarios.release();
+	}
+
+	private class UserPriority{
+		private String id;
+		private int priority;
+		
+		public UserPriority(String id, int priority) {
+			this.id = id;
+			this.priority = priority;
+		}
+		
+		public String getId() {
+			return id;
+		}
+		
+		public int getPriority() {
+			return priority;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof UserPriority) {
+				return ((UserPriority) obj).getId().equals(id);
+			}
+			return false;
+		}
 	}
 }

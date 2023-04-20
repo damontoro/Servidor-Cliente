@@ -13,7 +13,8 @@ public abstract class ServerCommand {
 		new LogoffCommand(),
 		new GetUsersCommand(),
 		new GetFileCommand(),
-		new FileFoundCommand()
+		new FileFoundCommand(),
+		new MissingFileCommand()
 	};
 
 	public static ServerCommand getCommand(Message<?> message) throws IllegalArgumentException {

@@ -2,17 +2,18 @@ package server.commands;
 
 import java.io.ObjectOutputStream;
 
-import message.GetFileMessage;
+import message.FileNotFoundMessage;
 import message.Message;
 import server.Server;
 
-public class GetFileCommand extends ServerCommand{
-	private String origin;
-	private String file;
+public class MissingFileCommand extends ServerCommand{
+
+	private String origin, destination, file;
 
 	@Override
 	public void execute(Server server, ObjectOutputStream outStream) throws Exception {
-		String userName = server.findUserWithFile(file);
+		String userName = server.manageMissingFile(origin,destination, file);
+		
 		if(userName == null)
 			server.fileNotFound("server", origin, file);
 		else	
@@ -21,9 +22,10 @@ public class GetFileCommand extends ServerCommand{
 
 	@Override
 	protected ServerCommand parse(Message<?> message) {
-		if(message.getType().equals(GetFileMessage.TYPE)) {
+		if(message.getType().equals(FileNotFoundMessage.TYPE)){
 			origin = message.getOrigin();
-			file = ((GetFileMessage) message).retrieveInfo();
+			destination = message.getDestination();
+			file = ((FileNotFoundMessage) message).retrieveInfo();
 			return this;
 		}
 		return null;
