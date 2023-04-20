@@ -65,9 +65,20 @@ public class Client implements Observable<ClientObserver>{
 		try{
 			Socket peerSocket = new Socket(info.getIp(), info.getPort());
 			ObjectOutputStream outPS = new ObjectOutputStream(peerSocket.getOutputStream());
-			ObjectInputStream inPS = new ObjectInputStream(peerSocket.getInputStream());
 			
-			Thread peerListener = new Thread(new PeerHandler(inPS, outPS, info.getFile()));
+			Thread peerListener = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try{
+						outPS.writeObject(new File("data" + File.separator + user.getId() + File.separator + info.getFileName()));
+						outPS.close();
+						peerSocket.close();
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			});
 			peerListener.start();
 		}
 		catch(Exception e){

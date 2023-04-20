@@ -13,7 +13,8 @@ public abstract class ClientCommand {
 		new UsersConnectedCommand(),
 		new RequestFileCommand(),
 		new FileFoundCommand(),
-		new FileNotFoundCommand()
+		new FileNotFoundCommand(),
+		new StartConnectionCommand()
 	};
 
 	public static ClientCommand getCommand(Message<?> message) throws IllegalArgumentException {

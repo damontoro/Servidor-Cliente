@@ -54,9 +54,9 @@ public class Server {
 		usersInfo.removeUser(u);
 	}
 	
-	public void sendP2PInfo(String destination, P2PInfo info) throws IOException {
+	public void sendP2PInfo(String origin, String destination, P2PInfo info) throws IOException {
 		ObjectOutputStream outStream = userStreams.get(destination);
-		outStream.writeObject(new StartConnectionMessage(null, destination, info));
+		outStream.writeObject(new StartConnectionMessage(origin, destination, info));
 	}
 
 	public void sendUsersInfo(ObjectOutputStream out, String destination) throws Exception {
