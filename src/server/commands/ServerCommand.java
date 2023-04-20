@@ -14,7 +14,8 @@ public abstract class ServerCommand {
 		new GetUsersCommand(),
 		new GetFileCommand(),
 		new FileFoundCommand(),
-		new MissingFileCommand()
+		new MissingFileCommand(),
+		new StartConnectionCommand()
 	};
 
 	public static ServerCommand getCommand(Message<?> message) throws IllegalArgumentException {

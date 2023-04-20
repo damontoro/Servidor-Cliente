@@ -10,7 +10,6 @@ import java.util.concurrent.Semaphore;
 
 import client.User;
 import message.UsersConnectedMessage;
-import utils.Pair;
 
 public class UsersInfo {
 	private Map<String, User> users;

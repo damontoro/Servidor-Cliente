@@ -14,6 +14,7 @@ public class FileFoundCommand extends ClientCommand{
 	}
 
 	@Override
+	
 	protected ClientCommand parse(Message<?> message) {
 		if(message.getType().equals(FileFoundMessage.TYPE)) {
 			peer = message.getOrigin();

@@ -13,10 +13,10 @@ public class FileHandler implements Runnable{
 	private String file, peer;
 	private ServerSocket server;
 
-	public FileHandler(Client cli, String file, String peer) throws IOException{
+	public FileHandler(Client cli, String peer, String file) throws IOException{
 		this.cli = cli;
-		this.file = file;
 		this.peer = peer;
+		this.file = file;
 		server = new ServerSocket(0);
 	}
 
@@ -30,10 +30,12 @@ public class FileHandler implements Runnable{
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			File f = (File) in.readObject();
 
+			System.out.println("Llegamos al fileOutputStream\n" + f.toString());
 			//Lo guardamos en la carpeta de descargas
 			FileOutputStream out = new FileOutputStream("data" + File.separator + 
 														cli.getName() + File.separator + 
 														f.getName());
+			
 
 			//Actualizamos mi lista local de archivos y la del server
 
