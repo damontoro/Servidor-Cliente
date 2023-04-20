@@ -8,6 +8,7 @@ import message.FileFoundMessage;
 import message.FileNotFoundMessage;
 import message.P2PInfo;
 import message.RequestFileMessage;
+import message.RetrieveFileListMessage;
 import message.StartConnectionMessage;
 
 import java.io.IOException;
@@ -52,6 +53,15 @@ public class Server {
 	
 	public void removeUser(User u) throws InterruptedException {
 		usersInfo.removeUser(u);
+	}
+
+	public void addFile(String user, String file) throws InterruptedException {
+		usersInfo.addFile(user, file);
+	}
+
+	public void sendFileList(String origin) throws Exception {
+		ObjectOutputStream outStream = userStreams.get(origin);
+		usersInfo.sendFileList(origin, outStream);
 	}
 	
 	public void sendP2PInfo(String origin, String destination, P2PInfo info) throws IOException {

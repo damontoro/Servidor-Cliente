@@ -19,6 +19,10 @@ public class Controller {
 		client.connect();
 	}
 	
+	public void getFileList(){
+		client.getFileList();
+	}
+
 	public void requestUsers() {
 		client.requestUsers();
 	}

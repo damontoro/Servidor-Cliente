@@ -4,6 +4,6 @@ Implementación de un Servidor y un Cliente. El servidor funciona como proxy par
 
 TODO:
 
-	Revisar el sistema de mensajes entre cliente y servidor
-	Preguntar por posibles errores de concurrencia en el onError
-	Hacer la puta maldita gui
+	Revisar que vuelva al login si el server se cierra
+	Pedir IP en el cliente
+	Si se termina forzando el programa no se desconecta

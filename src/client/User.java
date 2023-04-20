@@ -19,9 +19,8 @@ public class User implements Serializable{
 		this.sharedInfo = null;
 	}
 
-	public void removeFile(String file) {
-		sharedInfo.remove(file);
-	}
+	public void addFile(String file) {sharedInfo.add(file);}
+	public void removeFile(String file) {sharedInfo.remove(file);}
 
 	public String getId() {return id;}
 	public InetAddress getIp() {return ip;}

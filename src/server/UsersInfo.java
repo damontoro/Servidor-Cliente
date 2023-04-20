@@ -1,14 +1,19 @@
 package server;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import client.User;
+import message.RetrieveFileListMessage;
 import message.UsersConnectedMessage;
 
 public class UsersInfo {
@@ -52,6 +57,36 @@ public class UsersInfo {
 		users.remove(u.getId());
 		
 		mapaUsuarios.release();
+	}
+
+	public void sendFileList(String destination, ObjectOutputStream outStream) throws Exception{
+		mapaFicheros.acquire();
+		List<String> fileList = new ArrayList<String>();
+		for(String file : files.keySet()) {
+			if(!files.get(file).isEmpty())
+				fileList.add(file);
+		}
+
+		outStream.writeObject(new RetrieveFileListMessage("server", destination, fileList));
+
+		mapaFicheros.release();
+	}
+
+	public void addFile(String user, String file) throws InterruptedException {
+		mapaUsuarios.acquire();
+		if(!users.containsKey(user)) {
+			mapaUsuarios.release();
+			return;
+		}
+		users.get(user).addFile(file);
+		mapaUsuarios.release();
+
+		mapaFicheros.acquire();
+		if(!files.containsKey(file)){
+			files.put(file, new PriorityQueue<UserPriority>((a, b) -> a.getPriority() - b.getPriority()));
+		}
+		files.get(file).add(new UserPriority(user, 0));
+		mapaFicheros.release();
 	}
 
 	public void removeFile(String file, String user) throws InterruptedException {

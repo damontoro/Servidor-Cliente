@@ -1,5 +1,6 @@
 package client;
 
+import java.util.List;
 import java.util.Set;
 
 public interface ClientObserver {
@@ -7,4 +8,5 @@ public interface ClientObserver {
 	public void onConnect(String host, int port);
 	public void onUsersRequested(Set<String> users);
 	public void onDisconnect(String host, int port);
+	public void onFilesUpdated(List<String> files);
 }

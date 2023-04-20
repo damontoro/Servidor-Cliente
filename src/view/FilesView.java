@@ -33,11 +33,21 @@ public class FilesView extends JPanel{
 		iniButtons();
 	}
 
+	public void updateFiles(List<String> files){
+		this.files = files;
+		buttons.clear();
+		buttonsMap.clear();
+		removeAll();
+		iniButtons();
+		revalidate();
+		repaint();
+	}
 
 	public void addFile(String file){
 		files.add(file);
 		addButton(file);
 	}
+
 
 	private void iniButtons(){
 		for(String file : files){
@@ -55,7 +65,6 @@ public class FilesView extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				int res = JOptionPane.showConfirmDialog(null, "Seguro que te quieres descargar el archivo " + file + "?");
 				if(res == JOptionPane.YES_OPTION){
-					System.out.println("Descargando archivo " + file);
 					con.requestFile(file);
 				}
 			}

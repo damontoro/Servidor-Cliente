@@ -2,6 +2,7 @@ package client;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.FileOutputStream;
 import java.net.ServerSocket;
@@ -26,10 +27,19 @@ public class FileHandler implements Runnable{
 			cli.sendSocketData(peer, server.getLocalPort(), file);
 			Socket socket = server.accept();
 			
-			//Leemos el archivo
-			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-			File f = (File) in.readObject();
-			System.out.println(f.toString());
+			//Recibimos el archivo
+			FileOutputStream out = new FileOutputStream("data" + File.separator + cli.getName() + File.separator + file);
+			byte[] buffer = new byte[1024];
+			InputStream in = socket.getInputStream();
+			int count;
+			while((count = in.read(buffer)) >= 0){
+				out.write(buffer, 0, count);
+			}
+			out.close();
+			in.close();
+
+
+			//Notificamos al server que ahora tenemos el archivo
 
 		}catch(Exception e){
 			e.printStackTrace();

@@ -14,8 +14,8 @@ public class LeftPanel extends JPanel{
 	
 
 	private Controller controller;
-	private JButton login;
 	private JButton requestUsers;
+	private JButton reloadFiles;
 	private JButton logoff;
 
 	protected LeftPanel(Controller con){
@@ -35,6 +35,15 @@ public class LeftPanel extends JPanel{
 		});
 		requestUsers.setVisible(true);
 		
+		reloadFiles = new JButton("ReloadFiles");
+		reloadFiles.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.getFileList();
+			}
+		});
+		reloadFiles.setVisible(true);
+
 		logoff = new JButton("Logoff");
 		logoff.addActionListener(new ActionListener(){
 			@Override
@@ -46,6 +55,7 @@ public class LeftPanel extends JPanel{
 
 
 		add(requestUsers);
+		add(reloadFiles);
 		add(logoff);
 	}
 

@@ -1,11 +1,14 @@
 package client;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +18,7 @@ import javax.swing.JOptionPane;
 
 import message.FileFoundMessage;
 import message.FileNotFoundMessage;
+import message.RequestFileListMessage;
 import message.GetFileMessage;
 import message.GetUsersMessage;
 import message.LoginMessage;
@@ -64,13 +68,22 @@ public class Client implements Observable<ClientObserver>{
 	public void startP2PConnection(P2PInfo info) {
 		try{
 			Socket peerSocket = new Socket(info.getIp(), info.getPort());
-			ObjectOutputStream outPS = new ObjectOutputStream(peerSocket.getOutputStream());
+			OutputStream outPS = peerSocket.getOutputStream();
 			
 			Thread peerListener = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try{
-						outPS.writeObject(new File("data" + File.separator + user.getId() + File.separator + info.getFileName()));
+						String path = "data" + File.separator + user.getId() + File.separator + info.getFileName();
+						BufferedInputStream in = new BufferedInputStream(new FileInputStream(path));
+						byte[] buffer = new byte[1024];
+						int count;
+
+						while ((count = in.read(buffer)) >= 0) {
+							outPS.write(buffer, 0, count);
+							outPS.flush();
+						}
+						in.close();
 						outPS.close();
 						peerSocket.close();
 					}
@@ -96,6 +109,23 @@ public class Client implements Observable<ClientObserver>{
 			for(ClientObserver o : observers){
 				o.onError(e.getMessage());
 			}
+		}
+	}
+
+	public void getFileList(){
+		try{
+			outSS.writeObject(new RequestFileListMessage(user.getId(), "server"));
+		}
+		catch(Exception e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	public void updateFileList(List<String> files){
+		for(ClientObserver o : observers){
+			o.onFilesUpdated(files);
 		}
 	}
 
