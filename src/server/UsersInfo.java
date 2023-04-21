@@ -17,26 +17,26 @@ import message.UsersConnectedMessage;
 public class UsersInfo {
 	private Map<String, User> users;
 	private Map<String, PriorityQueue<UserPriority>> files;
-	private Semaphore mapaUsuarios, mapaFicheros;
+	private Semaphore semUsers, semFiles;
 	
 	public UsersInfo() {
 		users = new HashMap<String, User>();
 		files = new HashMap<String, PriorityQueue<UserPriority>>();
-		mapaUsuarios = new Semaphore(1);
-		mapaFicheros = new Semaphore(1);
+		semUsers = new Semaphore(1);
+		semFiles = new Semaphore(1);
 	}
 	
 	public boolean addUser(User u) throws InterruptedException{
-		mapaUsuarios.acquire();
+		semUsers.acquire();
 		
 		if(users.containsKey(u.getId())) {
-			mapaUsuarios.release();
+			semUsers.release();
 			return false;
 		}
 
 		users.put(u.getId(), u);
 		
-		mapaFicheros.acquire();
+		semFiles.acquire();
 		
 		for(String file : u.getSharedInfo()){
 			if(!files.containsKey(file)){
@@ -45,22 +45,22 @@ public class UsersInfo {
 			files.get(file).add(new UserPriority(u.getId(), 0));
 		}
 		
-		mapaFicheros.release();
-		mapaUsuarios.release();
+		semFiles.release();
+		semUsers.release();
 		
 		return true;
 	}
 	
 	public void removeUser(User u) throws InterruptedException  {
-		mapaUsuarios.acquire();
+		semUsers.acquire();
 		
 		users.remove(u.getId());
 		
-		mapaUsuarios.release();
+		semUsers.release();
 	}
 
 	public void sendFileList(String destination, ObjectOutputStream outStream) throws Exception{
-		mapaFicheros.acquire();
+		semFiles.acquire();
 		List<String> fileList = new ArrayList<String>();
 		for(String file : files.keySet()) {
 			if(!files.get(file).isEmpty())
@@ -69,51 +69,51 @@ public class UsersInfo {
 
 		outStream.writeObject(new RetrieveFileListMessage("server", destination, fileList));
 
-		mapaFicheros.release();
+		semFiles.release();
 	}
 
 	public void addFile(String user, String file) throws InterruptedException {
-		mapaUsuarios.acquire();
+		semUsers.acquire();
 		
 		if(!users.containsKey(user)) {
-			mapaUsuarios.release();
+			semUsers.release();
 			return;
 		}
 		users.get(user).addFile(file);
 		
-		mapaFicheros.acquire();
+		semFiles.acquire();
 		
 		if(!files.containsKey(file)){
 			files.put(file, new PriorityQueue<UserPriority>((a, b) -> a.getPriority() - b.getPriority()));
 		}
 		files.get(file).add(new UserPriority(user, 0));
 		
-		mapaUsuarios.release();
-		mapaFicheros.release();
+		semUsers.release();
+		semFiles.release();
 	}
 
 	public void removeFile(String file, String user) throws InterruptedException {
-		mapaUsuarios.acquire();
+		semUsers.acquire();
 		
 		if(!users.containsKey(user)) {
-			mapaUsuarios.release();
+			semUsers.release();
 			return;
 		}
 		users.get(user).removeFile(file);
 		
-		mapaUsuarios.release();
-		mapaFicheros.acquire();
+		semUsers.release();
+		semFiles.acquire();
 		
 		files.get(file).remove(new UserPriority(user, 0));
 		
-		mapaFicheros.release();
+		semFiles.release();
 	}
 	
 	public String findUserWithFile(String name) throws InterruptedException{
-		mapaFicheros.acquire();
+		semFiles.acquire();
 		
 		if(!files.containsKey(name)) {
-			mapaFicheros.release();
+			semFiles.release();
 			return null;
 		}
 		UserPriority user;
@@ -126,20 +126,20 @@ public class UsersInfo {
 
 		//Comprobamos si el usuario devuelto está conectado (en el caso de que el ultimo de la cola no lo esté)
 		if(user == null){
-			mapaFicheros.release();
+			semFiles.release();
 			return null;
 		}
 
 		files.get(name).add(new UserPriority(user.getId(), user.getPriority() + 1));
 		
-		mapaFicheros.release();
+		semFiles.release();
 		
 		//Comprobamos si el usuario es correcto
 		return user.getId() ;
 	}
 	
 	public void sendUsersInfo(ObjectOutputStream outStream, String destination) throws Exception {
-		mapaUsuarios.acquire();
+		semUsers.acquire();
 		
 		Set<String> ids = new HashSet<String>();
 		for(String id : users.keySet()) {
@@ -147,11 +147,11 @@ public class UsersInfo {
 		}
 		outStream.writeObject(new UsersConnectedMessage("server", destination, ids));
 		
-		mapaUsuarios.release();
+		semUsers.release();
 	}
 	
 	public void printUsersInfo() throws InterruptedException {
-		mapaUsuarios.acquire();
+		semUsers.acquire();
 		
 		if(users.size() == 0) {
 			System.out.print("No user connected\n\n");
@@ -169,7 +169,7 @@ public class UsersInfo {
 		}
 		System.out.print("\n");
 		
-		mapaUsuarios.release();
+		semUsers.release();
 	}
 
 	private class UserPriority{
