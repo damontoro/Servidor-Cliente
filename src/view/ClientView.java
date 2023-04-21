@@ -100,11 +100,12 @@ public class ClientView extends JFrame implements ClientObserver{
 	}
 
 	@Override
-	public void onConnect(String host, int port) {
+	public void onConnect(String host, int port, String username) {
 		JOptionPane.showMessageDialog(this, "Connected to " + host + ":" + port);
 		login.setVisible(false);
 		filesPanel.setVisible(true);
 		leftPanel.setVisible(true);
+		ClientView.this.setTitle(username);
 		ClientView.this.repaint();
 	}
 

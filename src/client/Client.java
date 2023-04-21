@@ -187,7 +187,7 @@ public class Client implements Observable<ClientObserver>{
 		connected = c;
 		if(connected) {
 			for(ClientObserver o : observers){
-				o.onConnect(Server.HOST, Server.PORT);
+				o.onConnect(Server.HOST, Server.PORT, user.getId());
 			}
 		}
 		else {
