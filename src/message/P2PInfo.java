@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.io.Serializable;
 
 public class P2PInfo implements Serializable{
-
 	private static final long serialVersionUID = -6813140754460356425L;
 
 	private InetAddress ip;
@@ -24,5 +23,4 @@ public class P2PInfo implements Serializable{
 	public void setIp(InetAddress ip) {this.ip = ip;}
 	public void setPort(int port) {this.port = port;}
 	public void setFileName(String fileName) {this.fileName = fileName;}
-
 }

@@ -18,5 +18,4 @@ public class LoginMessage extends Message<User>{
 	public User retrieveInfo() {
 		return user;
 	}
-
 }

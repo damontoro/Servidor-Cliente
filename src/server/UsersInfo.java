@@ -1,9 +1,7 @@
 package server;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,8 +35,9 @@ public class UsersInfo {
 		}
 
 		users.put(u.getId(), u);
-		mapaUsuarios.release();
+		
 		mapaFicheros.acquire();
+		
 		for(String file : u.getSharedInfo()){
 			if(!files.containsKey(file)){
 				files.put(file, new PriorityQueue<UserPriority>((a, b) -> a.getPriority() - b.getPriority()));
@@ -47,6 +46,7 @@ public class UsersInfo {
 		}
 		
 		mapaFicheros.release();
+		mapaUsuarios.release();
 		
 		return true;
 	}
@@ -74,32 +74,40 @@ public class UsersInfo {
 
 	public void addFile(String user, String file) throws InterruptedException {
 		mapaUsuarios.acquire();
+		
 		if(!users.containsKey(user)) {
 			mapaUsuarios.release();
 			return;
 		}
 		users.get(user).addFile(file);
+		
 		mapaUsuarios.release();
 
 		mapaFicheros.acquire();
+		
 		if(!files.containsKey(file)){
 			files.put(file, new PriorityQueue<UserPriority>((a, b) -> a.getPriority() - b.getPriority()));
 		}
 		files.get(file).add(new UserPriority(user, 0));
+		
 		mapaFicheros.release();
 	}
 
 	public void removeFile(String file, String user) throws InterruptedException {
 		mapaUsuarios.acquire();
+		
 		if(!users.containsKey(user)) {
 			mapaUsuarios.release();
 			return;
 		}
 		users.get(user).removeFile(file);
+		
 		mapaUsuarios.release();
 
 		mapaFicheros.acquire();
+		
 		files.get(file).remove(new UserPriority(user, 0));
+		
 		mapaFicheros.release();
 	}
 	
@@ -125,6 +133,7 @@ public class UsersInfo {
 		}
 
 		files.get(name).add(new UserPriority(user.getId(), user.getPriority() + 1));
+		
 		mapaFicheros.release();
 		
 		//Comprobamos si el usuario es correcto

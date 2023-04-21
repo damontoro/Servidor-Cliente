@@ -16,5 +16,4 @@ public class RequestFileMessage extends Message<String>{
 	public String retrieveInfo() {
 		return fileName;
 	}
-	
 }

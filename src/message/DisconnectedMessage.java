@@ -13,5 +13,4 @@ public class DisconnectedMessage extends Message<Void>{
 	public Void retrieveInfo() {
 		return null;
 	}
-
 }

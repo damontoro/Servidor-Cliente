@@ -8,7 +8,6 @@ import message.FileFoundMessage;
 import message.FileNotFoundMessage;
 import message.P2PInfo;
 import message.RequestFileMessage;
-import message.RetrieveFileListMessage;
 import message.StartConnectionMessage;
 
 import java.io.IOException;

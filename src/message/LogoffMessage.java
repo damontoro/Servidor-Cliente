@@ -18,5 +18,4 @@ public class LogoffMessage extends Message<User>{
 	public User retrieveInfo() {
 		return user;
 	}
-
 }
