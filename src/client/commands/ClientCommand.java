@@ -8,14 +8,14 @@ public abstract class ClientCommand {
 	protected static final String UNKNOWN_COMMAND_MSG = "Unknown command";
 	
 	protected static final ClientCommand[] AVAILABLE_COMMANDS = {
-		new ConnexionCommand(),
+		new ConnectionCommand(),
 		new DisconnectedCommand(),
 		new UsersConnectedCommand(),
+		new RetrieveFileListCommand(),
 		new RequestFileCommand(),
 		new FileFoundCommand(),
 		new FileNotFoundCommand(),
-		new StartConnectionCommand(),
-		new RetrieveFileListCommand(),
+		new StartConnectionCommand()
 	};
 
 	public static ClientCommand getCommand(Message<?> message) throws IllegalArgumentException {

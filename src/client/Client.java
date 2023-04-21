@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import client.locks.LockTicket;
 import message.FileFoundMessage;
 import message.FileNotFoundMessage;
 import message.RequestFileListMessage;
@@ -23,6 +24,7 @@ import message.GetFileMessage;
 import message.GetUsersMessage;
 import message.LoginMessage;
 import message.LogoffMessage;
+import message.NewFileMessage;
 import message.P2PInfo;
 import message.StartConnectionMessage;
 import server.Server;
@@ -31,6 +33,7 @@ import java.util.HashSet;
 
 public class Client implements Observable<ClientObserver>{
 	private User user;
+	private LockTicket userLock;
 	private List<ClientObserver> observers;
 	private boolean connected;
 	
@@ -42,6 +45,7 @@ public class Client implements Observable<ClientObserver>{
 
 	public Client() throws UnknownHostException {
 		user = new User(getIp());
+		userLock = new LockTicket();
 		observers = new ArrayList<ClientObserver>();
 		connected = false;
 	}
@@ -64,7 +68,72 @@ public class Client implements Observable<ClientObserver>{
 			}
 		}
 	}
+	
+	public void requestUsers() {
+		try{
+			outSS.writeObject(new GetUsersMessage(user.getId(), "server"));
+		}
+		catch(Exception e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
 
+	public void getFileList(){
+		try{
+			outSS.writeObject(new RequestFileListMessage(user.getId(), "server"));
+		}
+		catch(IOException e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	public void requestFile(String name){
+		try{
+			outSS.writeObject(new GetFileMessage(user.getId(), "server", name));
+		}
+		catch(IOException e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	public void searchFile(String file, String requester){
+		try{
+			if(fileIsPresent(file)){
+				outSS.writeObject(new FileFoundMessage(user.getId(), requester, file));
+			}
+			else{
+				outSS.writeObject(new FileNotFoundMessage(user.getId(), requester, file));
+			}
+		}
+		catch(IOException e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	private boolean fileIsPresent(String file) {
+		File f = new File("data" + File.separator + user.getId() + File.separator + file);
+		return f.exists();
+	}
+	
+	public void sendSocketData(String peer, int port, String file) {
+		try{
+			outSS.writeObject(new StartConnectionMessage(user.getId(), peer, new P2PInfo(getIp(), port, file)));
+		}
+		catch(IOException e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+	
 	public void startP2PConnection(P2PInfo info) {
 		try{
 			Socket peerSocket = new Socket(info.getIp(), info.getPort());
@@ -100,83 +169,13 @@ public class Client implements Observable<ClientObserver>{
 			}
 		}
 	}
-	
-	public void requestUsers() {
-		try{
-			outSS.writeObject(new GetUsersMessage(user.getId(), "server"));
-		}
-		catch(Exception e){
-			for(ClientObserver o : observers){
-				o.onError(e.getMessage());
-			}
-		}
-	}
-
-	public void getFileList(){
-		try{
-			outSS.writeObject(new RequestFileListMessage(user.getId(), "server"));
-		}
-		catch(Exception e){
-			for(ClientObserver o : observers){
-				o.onError(e.getMessage());
-			}
-		}
-	}
-
-	public void updateFileList(List<String> files){
-		for(ClientObserver o : observers){
-			o.onFilesUpdated(files);
-		}
-	}
-
-	public void requestFile(String name){
-		try{
-			outSS.writeObject(new GetFileMessage(user.getId(), "server", name));
-		}
-		catch(Exception e){
-			for(ClientObserver o : observers){
-				o.onError(e.getMessage());
-			}
-		}
-	}
-
-	public void searchFile(String file, String requester){
-		try{
-			if(fileIsPresent(file)){
-				outSS.writeObject(new FileFoundMessage(user.getId(), requester, file));
-			}
-			else{
-				outSS.writeObject(new FileNotFoundMessage(user.getId(), requester, file));
-			}
-		}catch(Exception e){
-			for(ClientObserver o : observers){
-				o.onError(e.getMessage());
-			}
-		}
-	}
-
-	private boolean fileIsPresent(String file) {
-		File f = new File("data" + File.separator + user.getId() + File.separator + file);
-		return f.exists();
-	}
-	
-	public void sendSocketData(String peer, int port, String file) {
-		try{
-			outSS.writeObject(new StartConnectionMessage(user.getId(), peer, new P2PInfo(getIp(), port, file)));
-		}
-		catch(Exception e){
-			for(ClientObserver o : observers){
-				o.onError(e.getMessage());
-			}
-		}
-	}
 
 	public void disconnect() {
 		if(connected) {
 			try{
 				outSS.writeObject(new LogoffMessage(user.getId(), "server", user));
 			}
-			catch(Exception e){
+			catch(IOException e){
 				for(ClientObserver o : observers){
 					o.onError(e.getMessage());
 				}
@@ -184,7 +183,7 @@ public class Client implements Observable<ClientObserver>{
 		}
 	}
 	
-	public void onConnexionEstablished(boolean c) {
+	public void onConnectionEstablished(boolean c) {
 		connected = c;
 		if(connected) {
 			for(ClientObserver o : observers){
@@ -204,6 +203,12 @@ public class Client implements Observable<ClientObserver>{
 		}
 	}
 	
+	public void updateFileList(List<String> files){
+		for(ClientObserver o : observers){
+			o.onFilesUpdated(files);
+		}
+	}
+	
 	public void onPeerFound(String peer, String file) {
 		try{
 			Thread t = new Thread(new FileHandler(this, peer, file));
@@ -217,6 +222,24 @@ public class Client implements Observable<ClientObserver>{
 	
 	public void onFileNotFound(String file) {
 		JOptionPane.showMessageDialog(null, file + " no esta en el sistema");
+	}
+	
+	public void onFileDownloaded(String file) {
+		try {
+			userLock.takeLock();
+			
+			user.addFile(file);
+		
+			userLock.releaseLock();
+						
+			outSS.writeObject(new NewFileMessage(user.getId(), "server", file));
+		} 
+		catch (IOException e) {
+			for(ClientObserver o : observers){
+				o.onError("User already connected");
+			}
+		}
+
 	}
 	
 	public void onDisconnect() {

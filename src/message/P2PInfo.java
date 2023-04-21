@@ -16,7 +16,6 @@ public class P2PInfo implements Serializable{
 		this.fileName = fileName;
 	}
 
-
 	public InetAddress getIp() {return ip;}
 	public String getFileName() {return fileName;}
 	public int getPort() {return port;}

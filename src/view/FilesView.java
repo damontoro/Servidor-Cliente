@@ -1,6 +1,5 @@
 package view;
 
-import client.Client;
 import controller.Controller;
 
 import javax.swing.JPanel;
@@ -8,7 +7,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -17,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class FilesView extends JPanel{
-
+	private static final long serialVersionUID = -740741922068189597L;
+	
 	List<String> files;
 	List<JButton> buttons;
 	Map<String, JButton> buttonsMap;

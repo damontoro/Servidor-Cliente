@@ -5,14 +5,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import controller.Controller;
 
 public class LeftPanel extends JPanel{
+	private static final long serialVersionUID = -2192892941931864101L;
 	
-
 	private Controller controller;
 	private JButton requestUsers;
 	private JButton reloadFiles;

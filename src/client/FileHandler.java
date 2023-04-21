@@ -8,7 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class FileHandler implements Runnable{
-
 	private Client cli;
 	private String file, peer;
 	private ServerSocket server;
@@ -34,7 +33,8 @@ public class FileHandler implements Runnable{
 			while((count = in.read(buffer)) >= 0){
 				out.write(buffer, 0, count);
 			}
-			//TODO Notificar al usuario y al servidor que el archivo se ha descargado
+			//Notificar al usuario y al servidor que el archivo se ha descargado
+			cli.onFileDownloaded(file);
 
 			out.close();
 			in.close();

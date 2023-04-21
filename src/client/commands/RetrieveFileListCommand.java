@@ -7,7 +7,6 @@ import message.Message;
 import message.RetrieveFileListMessage;
 
 public class RetrieveFileListCommand extends ClientCommand{
-
 	private List<String> fileList;
 
 	@Override
@@ -23,5 +22,4 @@ public class RetrieveFileListCommand extends ClientCommand{
 		}
 		return null;
 	}
-	
 }

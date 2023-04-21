@@ -1,24 +1,23 @@
 package client.commands;
 
 import client.Client;
-import message.ConnexionMessage;
+import message.ConnectionMessage;
 import message.Message;
 
-public class ConnexionCommand extends ClientCommand{
+public class ConnectionCommand extends ClientCommand{
 	private boolean connected;
 	
 	@Override
 	public void execute(Client cli) {
-		cli.onConnexionEstablished(connected);
+		cli.onConnectionEstablished(connected);
 	}
 
 	@Override
 	protected ClientCommand parse(Message<?> message) {
-		if(message.getType().equals(ConnexionMessage.TYPE)){
-			connected = ((ConnexionMessage) message).retrieveInfo();
+		if(message.getType().equals(ConnectionMessage.TYPE)){
+			connected = ((ConnectionMessage) message).retrieveInfo();
 			return this;
 		}
 		return null;
 	}
-
 }

@@ -5,8 +5,7 @@ import message.FileFoundMessage;
 import message.Message;
 
 public class FileFoundCommand extends ClientCommand{
-	private String peer;
-	private String file;
+	private String peer, file;
 
 	@Override
 	public void execute(Client cli) {

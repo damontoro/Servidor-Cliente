@@ -12,15 +12,19 @@ public class User implements Serializable{
 	private InetAddress ip;
 	private Set<String> sharedInfo; //Los archivos subidos
 
-
 	public User(InetAddress ip) {
 		this.id = null;
 		this.ip = ip;
 		this.sharedInfo = null;
 	}
 
-	public void addFile(String file) {sharedInfo.add(file);}
-	public void removeFile(String file) {sharedInfo.remove(file);}
+	public void addFile(String file) {
+		sharedInfo.add(file);
+	}
+	
+	public void removeFile(String file) {
+		sharedInfo.remove(file);
+	}
 
 	public String getId() {return id;}
 	public InetAddress getIp() {return ip;}

@@ -3,7 +3,7 @@ package server.commands;
 import java.io.ObjectOutputStream;
 
 import client.User;
-import message.ConnexionMessage;
+import message.ConnectionMessage;
 import message.LoginMessage;
 import message.Message;
 import server.Server;
@@ -14,7 +14,7 @@ public class LoginCommand extends ServerCommand {
 	
 	@Override
 	public void execute(Server server, ObjectOutputStream outStream) throws Exception{
-		outStream.writeObject(new ConnexionMessage(
+		outStream.writeObject(new ConnectionMessage(
 				"server",
 				origin,
 				server.addUser(user, outStream)

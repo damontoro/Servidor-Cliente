@@ -56,6 +56,7 @@ public class Server {
 
 	public void addFile(String user, String file) throws InterruptedException {
 		usersInfo.addFile(user, file);
+		usersInfo.printUsersInfo();
 	}
 
 	public void sendFileList(String origin) throws Exception {

@@ -7,8 +7,7 @@ import message.NewFileMessage;
 import server.Server;
 
 public class NewFileCommand extends ServerCommand{
-
-	String file, origin;
+	private String file, origin;
 
 	@Override
 	public void execute(Server server, ObjectOutputStream outStream) throws Exception {

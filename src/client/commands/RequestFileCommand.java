@@ -5,8 +5,7 @@ import message.RequestFileMessage;
 import client.Client;
 
 public class RequestFileCommand extends ClientCommand{
-	private String name;
-	private String requester;
+	private String name, requester;
 
 	@Override
 	public void execute(Client cli) {
@@ -22,5 +21,4 @@ public class RequestFileCommand extends ClientCommand{
 		}
 		return null;
 	}
-	
 }

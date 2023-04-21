@@ -81,8 +81,6 @@ public class UsersInfo {
 		}
 		users.get(user).addFile(file);
 		
-		mapaUsuarios.release();
-
 		mapaFicheros.acquire();
 		
 		if(!files.containsKey(file)){
@@ -90,6 +88,7 @@ public class UsersInfo {
 		}
 		files.get(file).add(new UserPriority(user, 0));
 		
+		mapaUsuarios.release();
 		mapaFicheros.release();
 	}
 
@@ -103,7 +102,6 @@ public class UsersInfo {
 		users.get(user).removeFile(file);
 		
 		mapaUsuarios.release();
-
 		mapaFicheros.acquire();
 		
 		files.get(file).remove(new UserPriority(user, 0));
