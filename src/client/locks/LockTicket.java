@@ -20,6 +20,7 @@ public class LockTicket implements Lock {
 	@Override
 	public void releaseLock() {
 		next++;
+		next = next;
 	}
 }
 

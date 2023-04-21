@@ -31,6 +31,12 @@ import server.Server;
 
 import java.util.HashSet;
 
+/*
+Los accesos al nombre del usuario no suponen un problema de concurrencia ya que se puede modificar
+este campo, solo leer. La lista de usuarios puede ser escrita o leida, por tanto se tiene que
+usar algun mecanismos de sincronización (locks).
+ */
+
 public class Client implements Observable<ClientObserver>{
 	private User user;
 	private LockTicket userLock;
@@ -173,7 +179,11 @@ public class Client implements Observable<ClientObserver>{
 	public void disconnect() {
 		if(connected) {
 			try{
+				userLock.takeLock();
+				
 				outSS.writeObject(new LogoffMessage(user.getId(), "server", user));
+				
+				userLock.releaseLock();
 			}
 			catch(IOException e){
 				for(ClientObserver o : observers){
