@@ -120,6 +120,7 @@ public class ClientView extends JFrame implements ClientObserver{
 		filesPanel.setVisible(false);
 		leftPanel.setVisible(false);
 		login.setVisible(true);
+		ClientView.this.setTitle("Client");
 		ClientView.this.repaint();
 	}
 

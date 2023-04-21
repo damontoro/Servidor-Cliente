@@ -38,8 +38,11 @@ public class FileHandler implements Runnable{
 
 			out.close();
 			in.close();
-
-		}catch(Exception e){
+			
+			socket.close();
+			server.close();
+		}
+		catch(Exception e){
 			e.printStackTrace();
 		}
 
