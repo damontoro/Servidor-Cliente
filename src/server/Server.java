@@ -52,6 +52,7 @@ public class Server {
 	
 	public void removeUser(User u) throws InterruptedException {
 		usersInfo.removeUser(u);
+		userStreams.remove(u.getId());
 	}
 
 	public void addFile(String user, String file) throws InterruptedException {
