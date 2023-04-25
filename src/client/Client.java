@@ -16,7 +16,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import client.locks.LockTicket;
+import locks.LockTicket;
 import message.FileFoundMessage;
 import message.FileNotFoundMessage;
 import message.RequestFileListMessage;
@@ -277,7 +277,12 @@ public class Client implements Observable<ClientObserver>{
 		for(var file : folder.listFiles()){
 			sharedInfo.add(file.getName());
 		}
+		
+		userLock.takeLock();
+		
 		user.setSharedInfo(sharedInfo);
+		
+		userLock.releaseLock();
 	}
 
 	public void setName(String name){ user.setId(name); }

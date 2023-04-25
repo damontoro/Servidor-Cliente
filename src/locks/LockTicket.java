@@ -1,4 +1,4 @@
-package client.locks;
+package locks;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

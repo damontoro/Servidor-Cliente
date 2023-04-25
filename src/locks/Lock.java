@@ -1,4 +1,4 @@
-package client.locks;
+package locks;
 
 public interface Lock {
 	void takeLock();

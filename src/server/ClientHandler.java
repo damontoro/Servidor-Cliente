@@ -29,6 +29,8 @@ public class ClientHandler implements Runnable{
 				ServerCommand c = ServerCommand.getCommand(message);
 				c.execute(server, outStream);
 			} while(!message.getType().equals(LogoffMessage.TYPE));
+			inStream.close();
+			outStream.close();
 			socket.close();
 		}
 		catch(Exception e){

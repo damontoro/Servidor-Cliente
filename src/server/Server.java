@@ -1,7 +1,8 @@
 package server;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import client.User;
 import message.FileFoundMessage;
@@ -19,15 +20,26 @@ import java.net.Socket;
 public class Server {
 	public static final String HOST = "localhost";
 	public static final int PORT = 8800;
-
-	private Map<String, ObjectOutputStream> userStreams;
 	private ServerSocket serverSocket;
+
+	private Map<String, ObjectOutputStream> usersStream;
+	private int readCount;
+	private Semaphore streamsAccess;
+	private Semaphore readCountAccess;
+	private Semaphore serviceQueue;
 	
 	private UsersInfo usersInfo;
 
 	public Server() {
 		usersInfo = new UsersInfo();
-		userStreams = new ConcurrentHashMap<String, ObjectOutputStream>();
+		
+		usersStream = new HashMap<String, ObjectOutputStream>();
+		readCount = 0;
+		streamsAccess = new Semaphore(1);
+		readCountAccess = new Semaphore(1);
+		//Como queremos que simule una cola FIFO, ponemos el fairness a true
+		serviceQueue = new Semaphore(1, true);
+		
 		try {
 			System.out.println("Server started in port " + PORT + " and ip " + InetAddress.getLocalHost() + "\n");
 			serverSocket = new ServerSocket(PORT);
@@ -46,13 +58,13 @@ public class Server {
 	public boolean addUser(User u, ObjectOutputStream outStream) throws InterruptedException {
 		boolean added = usersInfo.addUser(u);
 		if(added)
-			userStreams.put(u.getId(), outStream);
+			addStream(u.getId(), outStream);
 		return added;
 	}
 	
 	public void removeUser(User u) throws InterruptedException {
 		usersInfo.removeUser(u);
-		userStreams.remove(u.getId());
+		removeStream(u.getId());
 	}
 
 	public void addFile(String user, String file) throws InterruptedException {
@@ -61,12 +73,12 @@ public class Server {
 	}
 
 	public void sendFileList(String origin) throws Exception {
-		ObjectOutputStream outStream = userStreams.get(origin);
+		ObjectOutputStream outStream = getStream(origin);
 		usersInfo.sendFileList(origin, outStream);
 	}
 	
-	public void sendP2PInfo(String origin, String destination, P2PInfo info) throws IOException {
-		ObjectOutputStream outStream = userStreams.get(destination);
+	public void sendP2PInfo(String origin, String destination, P2PInfo info) throws Exception {
+		ObjectOutputStream outStream = getStream(destination);
 		outStream.writeObject(new StartConnectionMessage(origin, destination, info));
 	}
 
@@ -78,13 +90,13 @@ public class Server {
 		return usersInfo.findUserWithFile(file);
 	}
 
-	public void requestFile(String origin, String destination, String file) throws IOException {
-		ObjectOutputStream outStream = userStreams.get(destination);
+	public void requestFile(String origin, String destination, String file) throws Exception {
+		ObjectOutputStream outStream = getStream(destination);
 		outStream.writeObject(new RequestFileMessage(origin, destination, file));
 	}
 	
-	public void fileFound(String origin, String destination, String file) throws IOException {
-		ObjectOutputStream outStream = userStreams.get(destination);
+	public void fileFound(String origin, String destination, String file) throws Exception {
+		ObjectOutputStream outStream = getStream(destination);
 		outStream.writeObject(new FileFoundMessage(origin, destination, file));
 	}
 
@@ -93,8 +105,58 @@ public class Server {
 		return findUserWithFile(file);
 	}
 	
-	public void fileNotFound(String origin, String destination, String file) throws IOException{
-		ObjectOutputStream outStream = userStreams.get(destination);
+	public void fileNotFound(String origin, String destination, String file) throws Exception{
+		ObjectOutputStream outStream = getStream(destination);
 		outStream.writeObject(new FileNotFoundMessage(origin, destination, file));
+	}
+	
+	private void addStream(String id, ObjectOutputStream outStream) throws InterruptedException {
+		serviceQueue.acquire();
+		
+		streamsAccess.acquire();
+		
+		serviceQueue.release();
+		
+		usersStream.put(id, outStream);
+		
+		streamsAccess.release();
+	}
+	
+	private void removeStream(String id) throws InterruptedException {
+		serviceQueue.acquire();
+		
+		streamsAccess.acquire();
+		
+		serviceQueue.release();
+		
+		usersStream.remove(id);
+		
+		streamsAccess.release();
+	}
+	
+	private ObjectOutputStream getStream(String id) throws InterruptedException {
+		serviceQueue.acquire();
+		
+		readCountAccess.acquire();
+		
+		readCount++;
+		if(readCount == 1)
+			streamsAccess.acquire();
+		
+		serviceQueue.release();
+		
+		readCountAccess.release();
+		
+		ObjectOutputStream outStream = usersStream.get(id);
+		
+		readCountAccess.acquire();
+		
+		readCount--;
+		if(readCount == 0)
+			streamsAccess.release();
+		
+		readCountAccess.release();
+		
+		return outStream;
 	}
 }
