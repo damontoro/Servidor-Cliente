@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
 
 import client.User;
 import message.RetrieveFileListMessage;
@@ -39,7 +38,7 @@ public class UsersInfo {
 		return true;
 	}
 	
-	public synchronized void removeUser(User u) throws InterruptedException  {
+	public synchronized void removeUser(User u) throws InterruptedException {
 		users.remove(u.getId());
 	}
 

@@ -31,14 +31,14 @@ public class Server {
 	private UsersInfo usersInfo;
 
 	public Server() {
-		usersInfo = new UsersInfo();
-		
 		usersStream = new HashMap<String, ObjectOutputStream>();
 		readCount = 0;
 		streamsAccess = new Semaphore(1);
 		readCountAccess = new Semaphore(1);
 		//Como queremos que simule una cola FIFO, ponemos el fairness a true
 		serviceQueue = new Semaphore(1, true);
+		
+		usersInfo = new UsersInfo();
 		
 		try {
 			System.out.println("Server started in port " + PORT + " and ip " + InetAddress.getLocalHost() + "\n");

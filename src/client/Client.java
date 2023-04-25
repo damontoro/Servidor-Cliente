@@ -236,11 +236,7 @@ public class Client implements Observable<ClientObserver>{
 	
 	public void onFileDownloaded(String file) {
 		try {
-			userLock.takeLock();
-			
-			user.addFile(file);
-		
-			userLock.releaseLock();
+			loadSharedInfo();
 						
 			outSS.writeObject(new NewFileMessage(user.getId(), "server", file));
 		} 
@@ -286,6 +282,7 @@ public class Client implements Observable<ClientObserver>{
 	}
 
 	public void setName(String name){ user.setId(name); }
+	
 	public String getName(){ return user.getId(); }
 
 	private InetAddress getIp() throws UnknownHostException {
