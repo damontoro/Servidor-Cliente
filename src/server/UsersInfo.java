@@ -16,6 +16,9 @@ import client.User;
 import message.RetrieveFileListMessage;
 import message.UsersConnectedMessage;
 
+//Para implementar el monitor hemos usado la clase Lock de Java para poder usar
+//la clase Condition.
+
 public class UsersInfo {
 	private Map<String, User> users;
 	private boolean usingUsersMap;
