@@ -10,13 +10,10 @@ import javax.swing.JOptionPane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ServerFilesView extends JPanel{
-	private static final long serialVersionUID = -740741922068189597L;
+	private static final long serialVersionUID = -4402663887059309117L;
 	
 	List<String> files;
 	Controller con;

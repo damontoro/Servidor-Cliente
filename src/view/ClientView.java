@@ -131,6 +131,7 @@ public class ClientView extends JFrame implements ClientObserver{
 	public void onDisconnect(String host, int port) {
 		JOptionPane.showMessageDialog(this, "Disconnected from " + host + ":" + port);
 		serverFilesPanel.setVisible(false);
+		myFilesPanel.setVisible(false);
 		leftPanel.setVisible(false);
 		login.setVisible(true);
 		ClientView.this.setTitle("Client");
