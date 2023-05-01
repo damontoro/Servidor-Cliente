@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.List;
+import java.util.Set;
+
 import client.Client;
 import client.ClientObserver;
 
@@ -17,6 +20,14 @@ public class Controller {
 	
 	public void connect() {
 		client.connect();
+	}
+
+	public void deleteFile(String name) {
+		client.deleteFile(name);
+	}
+
+	public Set<String> getUserFiles() {
+		return client.getUserFiles();
 	}
 	
 	public void getFileList(){

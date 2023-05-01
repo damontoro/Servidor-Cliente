@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -84,6 +85,34 @@ public class Client implements Observable<ClientObserver>{
 				o.onError(e.getMessage());
 			}
 		}
+	}
+
+	public void deleteFile(String name){
+		try{
+			if(fileIsPresent(name)){
+				File f = new File("data" + File.separator + user.getId() + File.separator + name);
+				f.delete();
+			}
+			userLock.takeLock();
+			user.removeFile(name);
+			userLock.releaseLock();
+
+			for(ClientObserver o : observers){
+				o.onMyFilesUpdated();
+			}
+		}
+		catch(Exception e){
+			for(ClientObserver o : observers){
+				o.onError(e.getMessage());
+			}
+		}
+	}
+
+	public Set<String> getUserFiles(){
+		userLock.takeLock();
+		Set<String> files = user.getSharedInfo();
+		userLock.releaseLock();
+		return files;
 	}
 
 	public void getFileList(){
@@ -223,6 +252,10 @@ public class Client implements Observable<ClientObserver>{
 		try{
 			Thread t = new Thread(new FileHandler(this, peer, file));
 			t.start();
+
+			for(ClientObserver o : observers){
+				o.onPeerFound(peer, file);
+			}
 		}catch(Exception e){
 			for(ClientObserver o : observers){
 				o.onError(e.getMessage());
@@ -237,15 +270,17 @@ public class Client implements Observable<ClientObserver>{
 	public void onFileDownloaded(String file) {
 		try {
 			loadSharedInfo();
-						
 			outSS.writeObject(new NewFileMessage(user.getId(), "server", file));
+
+			for(ClientObserver o : observers){
+				o.onMyFilesUpdated();
+			}
 		} 
 		catch (IOException e) {
 			for(ClientObserver o : observers){
 				o.onError("User already connected");
 			}
 		}
-
 	}
 	
 	public void onDisconnect() {
